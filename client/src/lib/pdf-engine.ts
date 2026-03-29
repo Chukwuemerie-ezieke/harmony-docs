@@ -209,18 +209,33 @@ export async function protectPDF(
 }
 
 /**
- * Download bytes as a file
+ * Download bytes as a file — works in sandboxed iframes.
+ * Uses window.open as primary approach since anchor-click downloads
+ * are blocked by many iframe sandbox policies.
  */
 export function downloadBlob(data: Uint8Array | Blob, filename: string) {
-  const blob = data instanceof Blob ? data : new Blob([data], { type: "application/pdf" });
+  const mimeType = filename.endsWith('.zip') ? 'application/zip' : 
+                   filename.endsWith('.png') ? 'image/png' : 'application/pdf';
+  const blob = data instanceof Blob ? data : new Blob([data], { type: mimeType });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  
+  // Primary: use window.open which works in most sandboxed iframe environments
+  // when allow-popups is set (more common than allow-downloads)
+  const w = window.open(url, "_blank");
+  
+  if (!w) {
+    // Fallback: try the standard <a> download approach
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => document.body.removeChild(a), 100);
+  }
+  
+  // Revoke after a generous delay to allow download to complete
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 /**

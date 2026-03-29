@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useRef, useId } from "react";
 import { Upload, FileText, X, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,7 @@ export function FileDropzone({
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const inputId = useId();
 
   const acceptStr = accept.join(",");
 
@@ -79,15 +80,15 @@ export function FileDropzone({
 
   return (
     <div className="space-y-3">
-      {/* Drop zone */}
-      <div
+      {/* Drop zone — uses <label htmlFor> instead of programmatic .click() for iframe compatibility */}
+      <label
+        htmlFor={inputId}
         onDragOver={(e) => {
           e.preventDefault();
           setIsDragging(true);
         }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
-        onClick={() => inputRef.current?.click()}
         className={cn(
           "relative flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 sm:p-12 cursor-pointer transition-colors",
           isDragging
@@ -112,14 +113,19 @@ export function FileDropzone({
         </div>
         <input
           ref={inputRef}
+          id={inputId}
           type="file"
           accept={acceptStr}
           multiple={multiple}
-          onChange={(e) => e.target.files && handleFiles(e.target.files)}
-          className="hidden"
+          onChange={(e) => {
+            if (e.target.files) handleFiles(e.target.files);
+            // Reset value so the same file can be re-selected
+            e.target.value = "";
+          }}
+          className="sr-only"
           data-testid="file-input"
         />
-      </div>
+      </label>
 
       {/* File list */}
       {files.length > 0 && (
