@@ -11,8 +11,14 @@ const contactItems = [
   {
     icon: Mail,
     label: "Email",
-    value: "eziekechukwuemerie@gmail.com",
-    href: "mailto:eziekechukwuemerie@gmail.com",
+    value: "info@harmonydigitalconsults.com",
+    href: "mailto:info@harmonydigitalconsults.com",
+  },
+  {
+    icon: Mail,
+    label: "Alt. Email",
+    value: "harmonydigitalconsults@gmail.com",
+    href: "mailto:harmonydigitalconsults@gmail.com",
   },
   {
     icon: MapPin,
