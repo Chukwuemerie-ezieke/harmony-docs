@@ -16,11 +16,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="flex-1">{children}</main>
-      <footer className="border-t border-border/60 bg-card/50 py-6">
+      <footer className="border-t border-border/60 bg-card/50 py-8">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-            <p>Harmony Digital Consults Ltd</p>
-            <p>Document tools for educators and learners</p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+              <span className="font-semibold text-foreground">Harmony Digital Consults Ltd</span>
+              <span className="hidden sm:inline text-border">•</span>
+              <span>Transforming Education Through Technology</span>
+            </div>
+            <p>© {new Date().getFullYear()} — All rights reserved</p>
           </div>
         </div>
       </footer>

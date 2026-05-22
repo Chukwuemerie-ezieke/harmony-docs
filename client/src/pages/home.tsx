@@ -23,12 +23,16 @@ export default function Home() {
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary mb-4" data-testid="badge-brand">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              By Harmony Digital Consults Ltd
+            </div>
             <h1 className="text-xl font-bold tracking-tight text-foreground">
               Every document tool you need, in one place
             </h1>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-lg">
               Merge, split, compress, convert, and secure your PDFs.
-              Built for educators, learners, and teams at Harmony Digital Consults.
+              Built for educators, learners, and teams across Nigeria — free, fast, and privacy-first.
             </p>
           </div>
         </div>

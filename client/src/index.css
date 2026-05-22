@@ -26,19 +26,19 @@
   --sidebar: 215 30% 15%;
   --sidebar-foreground: 210 20% 95%;
   --sidebar-border: 215 25% 20%;
-  --sidebar-primary: 174 72% 40%;
+  --sidebar-primary: 183 98% 22%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 215 25% 20%;
   --sidebar-accent-foreground: 210 20% 95%;
-  --sidebar-ring: 174 72% 40%;
+  --sidebar-ring: 183 98% 22%;
 
   /* Popover */
   --popover: 210 20% 97%;
   --popover-foreground: 215 25% 14%;
   --popover-border: 210 12% 89%;
 
-  /* Primary — Harmony Teal */
-  --primary: 174 72% 40%;
+  /* Primary — Harmony Digital Consults Hydra Teal #01696F */
+  --primary: 183 98% 22%;
   --primary-foreground: 0 0% 100%;
 
   /* Secondary */
@@ -50,7 +50,7 @@
   --muted-foreground: 215 10% 45%;
 
   /* Accent */
-  --accent: 174 25% 92%;
+  --accent: 183 25% 92%;
   --accent-foreground: 215 25% 14%;
 
   /* Destructive */
@@ -59,10 +59,10 @@
 
   /* Input */
   --input: 210 12% 75%;
-  --ring: 174 72% 40%;
+  --ring: 183 98% 22%;
 
   /* Charts */
-  --chart-1: 174 72% 40%;
+  --chart-1: 183 98% 22%;
   --chart-2: 215 60% 45%;
   --chart-3: 43 74% 49%;
   --chart-4: 0 72% 51%;
@@ -121,17 +121,17 @@
   --sidebar: 215 30% 8%;
   --sidebar-foreground: 210 20% 90%;
   --sidebar-border: 215 20% 14%;
-  --sidebar-primary: 174 55% 50%;
+  --sidebar-primary: 188 35% 47%;
   --sidebar-primary-foreground: 215 25% 9%;
   --sidebar-accent: 215 20% 16%;
   --sidebar-accent-foreground: 210 20% 90%;
-  --sidebar-ring: 174 55% 50%;
+  --sidebar-ring: 188 35% 47%;
 
   --popover: 215 22% 13%;
   --popover-foreground: 210 20% 93%;
   --popover-border: 215 15% 18%;
 
-  --primary: 174 55% 50%;
+  --primary: 188 45% 55%;
   --primary-foreground: 215 25% 9%;
 
   --secondary: 215 15% 18%;
@@ -140,16 +140,16 @@
   --muted: 215 12% 20%;
   --muted-foreground: 210 10% 60%;
 
-  --accent: 174 15% 18%;
+  --accent: 188 15% 18%;
   --accent-foreground: 210 20% 93%;
 
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
 
   --input: 215 12% 30%;
-  --ring: 174 55% 50%;
+  --ring: 188 45% 55%;
 
-  --chart-1: 174 55% 50%;
+  --chart-1: 188 45% 55%;
   --chart-2: 215 60% 60%;
   --chart-3: 43 74% 60%;
   --chart-4: 0 72% 60%;

@@ -1,22 +1,33 @@
 export function HarmonyLogo({ className = "h-8" }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 200 40"
+      viewBox="0 0 220 44"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="Harmony Docs"
+      aria-label="Harmony Docs by Harmony Digital Consults"
     >
-      {/* Icon - two overlapping document shapes forming an H */}
-      <rect x="2" y="4" width="18" height="24" rx="3" stroke="currentColor" strokeWidth="2.2" fill="none" />
-      <rect x="10" y="10" width="18" height="24" rx="3" stroke="currentColor" strokeWidth="2.2" fill="hsl(var(--primary) / 0.15)" />
-      <line x1="14" y1="18" x2="24" y2="18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="14" y1="22" x2="22" y2="22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="14" y1="26" x2="20" y2="26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      {/* Text */}
+      {/* Hexagonal H mark — Harmony Digital Consults brand */}
+      <g transform="translate(2, 2)">
+        {/* Hexagon outer */}
+        <path
+          d="M20 1 L37 11 L37 29 L20 39 L3 29 L3 11 Z"
+          stroke="hsl(var(--primary))"
+          strokeWidth="2"
+          fill="hsl(var(--primary) / 0.08)"
+        />
+        {/* Letter H inside */}
+        <path
+          d="M13 13 L13 27 M27 13 L27 27 M13 20 L27 20"
+          stroke="hsl(var(--primary))"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+        />
+      </g>
+      {/* Wordmark */}
       <text
-        x="36"
-        y="26"
+        x="48"
+        y="28"
         fontFamily="'Cabinet Grotesk', 'General Sans', sans-serif"
         fontWeight="700"
         fontSize="19"
@@ -26,10 +37,10 @@ export function HarmonyLogo({ className = "h-8" }: { className?: string }) {
         Harmony
       </text>
       <text
-        x="134"
-        y="26"
+        x="146"
+        y="28"
         fontFamily="'General Sans', sans-serif"
-        fontWeight="400"
+        fontWeight="500"
         fontSize="19"
         fill="hsl(var(--primary))"
         letterSpacing="-0.02em"
