@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import About from "@/pages/about";
+import Contact from "@/pages/contact";
 import MergeTool from "@/pages/tools/merge";
 import SplitTool from "@/pages/tools/split";
 import CompressTool from "@/pages/tools/compress";
@@ -23,6 +25,8 @@ function AppRouter() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
       <Route path="/tool/merge" component={MergeTool} />
       <Route path="/tool/split" component={SplitTool} />
       <Route path="/tool/compress" component={CompressTool} />

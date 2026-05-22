@@ -10,13 +10,40 @@
     <meta property="og:title" content="Harmony Docs — Document Toolkit" />
     <meta property="og:description" content="Free PDF tools by Harmony Digital Consults Ltd. Merge, split, compress, convert, and secure your documents." />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="/harmony-logo.jpg" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
-    <meta property="og:image" content="/harmony-logo.jpg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet">
+
+    <!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID -->
+    <script>
+      window.HARMONY_GA_ID = "G-XXXXXXXXXX"; // <-- paste your real GA4 ID here
+      if (window.HARMONY_GA_ID && window.HARMONY_GA_ID !== "G-XXXXXXXXXX") {
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + window.HARMONY_GA_ID;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag("js", new Date());
+        gtag("config", window.HARMONY_GA_ID, { anonymize_ip: true });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // PWA service worker registration
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/sw.js").catch(function (err) {
+            console.warn("SW registration failed:", err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
