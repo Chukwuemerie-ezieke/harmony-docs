@@ -12,13 +12,13 @@
   "categories": ["productivity", "education", "utilities"],
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "./favicon.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/harmony-logo.jpg",
+      "src": "./harmony-logo.jpg",
       "sizes": "1024x1024",
       "type": "image/jpeg",
       "purpose": "any"
