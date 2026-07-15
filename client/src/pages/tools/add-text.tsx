@@ -20,6 +20,20 @@ export default function AddTextTool() {
       }}
       onDownload={(data) => downloadBlob(data, "annotated.pdf")}
       downloadLabel="Download annotated PDF"
+      instructions={{
+        title: "How to add text to a PDF",
+        steps: [
+          "Upload the PDF you want to annotate.",
+          "Type your desired text and set the X/Y coordinates and font size.",
+          "Click 'Add Text' to stamp your text onto the document and download the result."
+        ]
+      }}
+      faqs={[
+        {
+          question: "How do I know what X and Y coordinates to use?",
+          answer: "The coordinates are based on points, with 0,0 typically being the bottom-left corner of the page. You may need to experiment to find the exact spot you want."
+        }
+      ]}
       renderOptions={({ files, onProcess, status }) => (
         files.length > 0 ? (
           <div className="space-y-4">
@@ -67,7 +81,7 @@ export default function AddTextTool() {
             </div>
             <Button
               onClick={onProcess}
-              className="w-full"
+              className="w-full h-14 text-lg font-bold rounded-xl shadow-lg hover:shadow-primary/25 transition-all"
               size="lg"
               disabled={status === "processing" || !textContent.trim()}
               data-testid="process-btn"
