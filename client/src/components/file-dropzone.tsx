@@ -79,8 +79,8 @@ export function FileDropzone({
   };
 
   return (
-    <div className="space-y-3">
-      {/* Drop zone — uses <label htmlFor> instead of programmatic .click() for iframe compatibility */}
+    <div className="space-y-6">
+      {/* Drop zone — enlarged and styled similar to PDFHouse */}
       <label
         htmlFor={inputId}
         onDragOver={(e) => {
@@ -90,24 +90,24 @@ export function FileDropzone({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={cn(
-          "relative flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 sm:p-12 cursor-pointer transition-colors",
+          "relative flex flex-col items-center justify-center gap-6 rounded-2xl border-2 border-dashed p-12 sm:p-20 cursor-pointer transition-all duration-200 group shadow-sm bg-card",
           isDragging
-            ? "border-primary bg-primary/5"
-            : "border-border hover:border-primary/50 hover:bg-muted/30"
+            ? "border-primary bg-primary/5 scale-[1.02]"
+            : "border-border hover:border-primary/50 hover:bg-muted/20"
         )}
         data-testid="file-dropzone"
       >
         <div className={cn(
-          "rounded-full p-3 transition-colors",
-          isDragging ? "bg-primary/10" : "bg-muted"
+          "rounded-full p-6 transition-all duration-300",
+          isDragging ? "bg-primary/20 text-primary scale-110" : "bg-primary/10 text-primary group-hover:bg-primary/20"
         )}>
-          <Upload className={cn("h-6 w-6", isDragging ? "text-primary" : "text-muted-foreground")} />
+          <Upload className="h-10 w-10" />
         </div>
-        <div className="text-center">
-          <p className="text-sm font-medium text-foreground">
-            Drop files here or click to browse
+        <div className="text-center space-y-2">
+          <p className="text-xl sm:text-2xl font-bold text-foreground">
+            Choose files <span className="font-normal text-muted-foreground hidden sm:inline">or drop them here</span>
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground font-medium">
             {accept.join(", ")} {multiple ? `(up to ${maxFiles} files)` : "(1 file)"}
           </p>
         </div>
@@ -129,7 +129,7 @@ export function FileDropzone({
 
       {/* File list */}
       {files.length > 0 && (
-        <div className="space-y-1.5" data-testid="file-list">
+        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 rounded-lg" data-testid="file-list">
           {files.map((file, i) => (
             <div
               key={`${file.name}-${i}`}
@@ -143,31 +143,33 @@ export function FileDropzone({
                 reorderable && handleReorderDrop(i);
               }}
               className={cn(
-                "flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-sm transition-colors",
-                reorderable && "cursor-grab active:cursor-grabbing",
+                "flex items-center gap-3 rounded-lg border border-border/60 bg-card px-4 py-3 text-sm transition-all shadow-sm hover:border-primary/30",
+                reorderable && "cursor-grab active:cursor-grabbing hover:bg-muted/30",
                 dragIndex === i && "opacity-40"
               )}
               data-testid={`file-item-${i}`}
             >
               {reorderable && (
-                <GripVertical className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <GripVertical className="h-5 w-5 text-muted-foreground/50 shrink-0" />
               )}
-              <FileText className="h-4 w-4 text-primary shrink-0" />
-              <span className="truncate flex-1 text-foreground">{file.name}</span>
-              <span className="text-xs text-muted-foreground shrink-0">
+              <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                 <FileText className="h-4 w-4 text-primary" />
+              </div>
+              <span className="truncate flex-1 font-medium text-foreground">{file.name}</span>
+              <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-1 rounded-md shrink-0">
                 {formatSize(file.size)}
               </span>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 shrink-0"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeFile(i);
                 }}
                 data-testid={`remove-file-${i}`}
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
           ))}

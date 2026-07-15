@@ -17,6 +17,24 @@ export default function CompressTool() {
       }}
       onDownload={(data) => downloadBlob(data, "compressed.pdf")}
       downloadLabel="Download compressed PDF"
+      instructions={{
+        title: "How to compress a PDF",
+        steps: [
+          "Upload the PDF you want to reduce in size.",
+          "Wait a moment while we optimize the internal structure of your document.",
+          "Download the compressed PDF file, ready for email or web use."
+        ]
+      }}
+      faqs={[
+        {
+          question: "How does the compression work?",
+          answer: "Our tool optimizes the internal structure of the PDF by stripping out unused objects and applying advanced compression algorithms without significantly degrading the visual quality."
+        },
+        {
+          question: "Is my data uploaded to your servers?",
+          answer: "No, all compression is done locally in your browser. Your files remain on your device."
+        }
+      ]}
     >
       {() => null}
     </ToolPage>
