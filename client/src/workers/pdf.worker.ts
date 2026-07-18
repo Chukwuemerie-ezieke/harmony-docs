@@ -45,6 +45,9 @@ self.onmessage = async (e: MessageEvent) => {
       default:
         throw new Error(`Unknown action: ${action}`);
     }
+
+    // Convert Uint8Array to regular Array to avoid DataCloneError in Safari/some environments
+    // or just pass the array directly if it's supported. We'll pass the raw object to be safe.
     self.postMessage({ id, status: "success", data: result });
   } catch (error: any) {
     self.postMessage({ id, status: "error", error: error.message });
@@ -204,7 +207,6 @@ async function handleRearrange(bytes: Uint8Array, order: number[]) {
   const originalPdf = await PDFDocument.load(bytes);
   const newPdf = await PDFDocument.create();
 
-  // order array contains 0-based indices in the desired order
   const copiedPages = await newPdf.copyPages(originalPdf, order);
   copiedPages.forEach(page => newPdf.addPage(page));
 
