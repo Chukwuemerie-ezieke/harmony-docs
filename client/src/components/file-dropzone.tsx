@@ -1,5 +1,6 @@
 import { useCallback, useState, useRef, useId } from "react";
 import { Upload, FileText, X, GripVertical } from "lucide-react";
+import { PdfPreview } from "./pdf-preview";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -80,7 +81,6 @@ export function FileDropzone({
 
   return (
     <div className="space-y-6">
-      {/* Drop zone — enlarged and styled similar to PDFHouse */}
       <label
         htmlFor={inputId}
         onDragOver={(e) => {
@@ -119,7 +119,6 @@ export function FileDropzone({
           multiple={multiple}
           onChange={(e) => {
             if (e.target.files) handleFiles(e.target.files);
-            // Reset value so the same file can be re-selected
             e.target.value = "";
           }}
           className="sr-only"
@@ -127,7 +126,6 @@ export function FileDropzone({
         />
       </label>
 
-      {/* File list */}
       {files.length > 0 && (
         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 rounded-lg" data-testid="file-list">
           {files.map((file, i) => (
@@ -152,8 +150,14 @@ export function FileDropzone({
               {reorderable && (
                 <GripVertical className="h-5 w-5 text-muted-foreground/50 shrink-0" />
               )}
-              <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
-                 <FileText className="h-4 w-4 text-primary" />
+              <div className="h-12 w-10 shrink-0">
+                 {file.type === "application/pdf" ? (
+                   <PdfPreview file={file} className="h-full w-full object-cover rounded shadow-sm" />
+                 ) : (
+                   <div className="h-full w-full rounded bg-primary/10 flex items-center justify-center">
+                     <FileText className="h-4 w-4 text-primary" />
+                   </div>
+                 )}
               </div>
               <span className="truncate flex-1 font-medium text-foreground">{file.name}</span>
               <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-1 rounded-md shrink-0">

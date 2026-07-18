@@ -1,133 +1,79 @@
-import { PDFDocument, rgb, degrees, StandardFonts, PageSizes } from "pdf-lib";
+// Re-export common functions and set up the Web Worker bridge
+let worker: Worker | null = null;
 
-/**
- * Merge multiple PDF files into one
- */
+function getWorker() {
+  if (!worker) {
+    worker = new Worker(new URL("../workers/pdf.worker.ts", import.meta.url), { type: "module" });
+  }
+  return worker;
+}
+
+function runInWorker(action: string, payload: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const w = getWorker();
+    const id = Math.random().toString(36).substring(7);
+
+    const handler = (e: MessageEvent) => {
+      if (e.data.id === id) {
+        w.removeEventListener("message", handler);
+        if (e.data.status === "success") {
+          resolve(e.data.data);
+        } else {
+          reject(new Error(e.data.error));
+        }
+      }
+    };
+
+    w.addEventListener("message", handler);
+    w.postMessage({ id, action, payload });
+  });
+}
+
+// Convert File to Uint8Array for transferring to worker
+async function fileToBytes(file: File): Promise<Uint8Array> {
+  const buffer = await file.arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
 export async function mergePDFs(files: File[]): Promise<Uint8Array> {
-  const mergedPdf = await PDFDocument.create();
-  for (const file of files) {
-    const bytes = await file.arrayBuffer();
-    const pdf = await PDFDocument.load(bytes);
-    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-    pages.forEach((page) => mergedPdf.addPage(page));
-  }
-  return mergedPdf.save();
+  const bytesArray = await Promise.all(files.map(fileToBytes));
+  return runInWorker("merge", { files: bytesArray });
 }
 
-/**
- * Split a PDF into individual pages, returns array of page bytes
- */
 export async function splitPDF(file: File): Promise<{ name: string; data: Uint8Array }[]> {
-  const bytes = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(bytes);
-  const pageCount = pdf.getPageCount();
-  const results: { name: string; data: Uint8Array }[] = [];
-
-  for (let i = 0; i < pageCount; i++) {
-    const newPdf = await PDFDocument.create();
-    const [page] = await newPdf.copyPages(pdf, [i]);
-    newPdf.addPage(page);
-    const pageBytes = await newPdf.save();
-    const baseName = file.name.replace(".pdf", "");
-    results.push({ name: `${baseName}_page_${i + 1}.pdf`, data: pageBytes });
-  }
-  return results;
+  const bytes = await fileToBytes(file);
+  return runInWorker("split", { file: bytes, filename: file.name });
 }
 
-/**
- * Compress a PDF by rewriting it (strips unused objects)
- */
 export async function compressPDF(file: File): Promise<Uint8Array> {
-  const bytes = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(bytes);
-  return pdf.save({
-    useObjectStreams: true,
-    addDefaultPage: false,
-    objectsPerTick: 50,
-  });
+  const bytes = await fileToBytes(file);
+  return runInWorker("compress", { file: bytes });
 }
 
-/**
- * Rotate all pages in a PDF
- */
 export async function rotatePDF(file: File, angle: number): Promise<Uint8Array> {
-  const bytes = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(bytes);
-  const pages = pdf.getPages();
-  pages.forEach((page) => {
-    const currentRotation = page.getRotation().angle;
-    page.setRotation(degrees(currentRotation + angle));
-  });
-  return pdf.save();
+  const bytes = await fileToBytes(file);
+  return runInWorker("rotate", { file: bytes, angle });
 }
 
-/**
- * Add page numbers to a PDF
- */
 export async function addPageNumbers(
   file: File,
   position: "bottom-center" | "bottom-right" | "bottom-left" = "bottom-center",
   startFrom: number = 1
 ): Promise<Uint8Array> {
-  const bytes = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(bytes);
-  const helvetica = await pdf.embedFont(StandardFonts.Helvetica);
-  const pages = pdf.getPages();
-
-  pages.forEach((page, index) => {
-    const { width, height } = page.getSize();
-    const pageNum = `${index + startFrom}`;
-    const textWidth = helvetica.widthOfTextAtSize(pageNum, 11);
-
-    let x: number;
-    if (position === "bottom-center") x = width / 2 - textWidth / 2;
-    else if (position === "bottom-right") x = width - 50;
-    else x = 40;
-
-    page.drawText(pageNum, {
-      x,
-      y: 30,
-      size: 11,
-      font: helvetica,
-      color: rgb(0.3, 0.3, 0.3),
-    });
-  });
-  return pdf.save();
+  const bytes = await fileToBytes(file);
+  return runInWorker("page-numbers", { file: bytes, position, startFrom });
 }
 
-/**
- * Add a text watermark to all pages
- */
 export async function addWatermark(
   file: File,
   text: string,
   opacity: number = 0.15,
   fontSize: number = 48
 ): Promise<Uint8Array> {
-  const bytes = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(bytes);
-  const helvetica = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const pages = pdf.getPages();
-
-  pages.forEach((page) => {
-    const { width, height } = page.getSize();
-    const textWidth = helvetica.widthOfTextAtSize(text, fontSize);
-    page.drawText(text, {
-      x: width / 2 - textWidth / 2,
-      y: height / 2,
-      size: fontSize,
-      font: helvetica,
-      color: rgb(0.5, 0.5, 0.5),
-      opacity,
-      rotate: degrees(-45),
-    });
-  });
-  return pdf.save();
+  const bytes = await fileToBytes(file);
+  return runInWorker("watermark", { file: bytes, text, opacity, fontSize });
 }
 
-/**
- * Add text overlay to a PDF page
- */
 export async function addText(
   file: File,
   textContent: string,
@@ -136,95 +82,48 @@ export async function addText(
   fontSize: number = 14,
   pageIndex: number = 0
 ): Promise<Uint8Array> {
-  const bytes = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(bytes);
-  const helvetica = await pdf.embedFont(StandardFonts.Helvetica);
-  const pages = pdf.getPages();
-  const page = pages[pageIndex];
-
-  if (page) {
-    page.drawText(textContent, {
-      x,
-      y,
-      size: fontSize,
-      font: helvetica,
-      color: rgb(0, 0, 0),
-    });
-  }
-  return pdf.save();
+  const bytes = await fileToBytes(file);
+  return runInWorker("add-text", { file: bytes, textContent, x, y, fontSize, pageIndex });
 }
 
-/**
- * Convert images to a single PDF
- */
 export async function imagesToPDF(files: File[]): Promise<Uint8Array> {
-  const pdf = await PDFDocument.create();
-
-  for (const file of files) {
-    const bytes = await file.arrayBuffer();
-    const uint8 = new Uint8Array(bytes);
-
-    let image;
-    if (file.type === "image/png") {
-      image = await pdf.embedPng(uint8);
-    } else {
-      image = await pdf.embedJpg(uint8);
-    }
-
-    const dims = image.scale(1);
-    // Fit to A4 while maintaining aspect ratio
-    const a4Width = 595.28;
-    const a4Height = 841.89;
-    const scale = Math.min(a4Width / dims.width, a4Height / dims.height, 1);
-    const scaledWidth = dims.width * scale;
-    const scaledHeight = dims.height * scale;
-
-    const page = pdf.addPage([a4Width, a4Height]);
-    page.drawImage(image, {
-      x: (a4Width - scaledWidth) / 2,
-      y: (a4Height - scaledHeight) / 2,
-      width: scaledWidth,
-      height: scaledHeight,
-    });
-  }
-  return pdf.save();
+  const bytesArray = await Promise.all(files.map(fileToBytes));
+  const types = files.map(f => f.type);
+  return runInWorker("images-to-pdf", { files: bytesArray, types });
 }
 
-/**
- * Protect PDF with a password
- */
 export async function protectPDF(
   file: File,
   password: string
 ): Promise<Uint8Array> {
-  const bytes = await file.arrayBuffer();
-  // pdf-lib doesn't support encryption directly, so we recreate with metadata
-  // For a proper implementation, we'd need a server-side solution
-  // This creates a copy and adds password metadata marker
-  const pdf = await PDFDocument.load(bytes);
-  pdf.setTitle(pdf.getTitle() || "Protected Document");
-  pdf.setProducer("Harmony Docs - Harmony Digital Consults Ltd");
-  // Note: Real password protection requires server-side qpdf or similar
-  return pdf.save();
+  const bytes = await fileToBytes(file);
+  return runInWorker("protect", { file: bytes, password });
 }
 
-/**
- * Download bytes as a file — works in sandboxed iframes.
- * Uses window.open as primary approach since anchor-click downloads
- * are blocked by many iframe sandbox policies.
- */
+export async function rearrangePDF(file: File, order: number[]): Promise<Uint8Array> {
+  const bytes = await fileToBytes(file);
+  return runInWorker("rearrange", { file: bytes, order });
+}
+
+export async function extractPDF(file: File, pagesToExtract: number[]): Promise<Uint8Array> {
+  const bytes = await fileToBytes(file);
+  return runInWorker("extract", { file: bytes, pagesToExtract });
+}
+
+export async function deletePDFPages(file: File, pagesToDelete: number[]): Promise<Uint8Array> {
+  const bytes = await fileToBytes(file);
+  return runInWorker("delete", { file: bytes, pagesToDelete });
+}
+
 export function downloadBlob(data: Uint8Array | Blob, filename: string) {
   const mimeType = filename.endsWith('.zip') ? 'application/zip' : 
                    filename.endsWith('.png') ? 'image/png' : 'application/pdf';
   const blob = data instanceof Blob ? data : new Blob([data], { type: mimeType });
   const url = URL.createObjectURL(blob);
   
-  // Primary: use window.open which works in most sandboxed iframe environments
-  // when allow-popups is set (more common than allow-downloads)
   const w = window.open(url, "_blank");
   
   if (!w) {
-    // Fallback: try the standard <a> download approach
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
@@ -234,18 +133,13 @@ export function downloadBlob(data: Uint8Array | Blob, filename: string) {
     setTimeout(() => document.body.removeChild(a), 100);
   }
   
-  // Revoke after a generous delay to allow download to complete
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-/**
- * Download multiple files as a zip (using JSZip loaded from CDN)
- */
 export async function downloadAsZip(
   files: { name: string; data: Uint8Array }[],
   zipName: string
 ) {
-  // Dynamic import JSZip from CDN
   const JSZip = (await import("https://esm.sh/jszip@3.10.1" as any)).default;
   const zip = new JSZip();
   files.forEach((f) => zip.file(f.name, f.data));
@@ -253,10 +147,10 @@ export async function downloadAsZip(
   downloadBlob(content, zipName);
 }
 
-/**
- * Get PDF page count from a file
- */
+// Re-export this for UI features that need page counts without running full worker tasks
 export async function getPDFPageCount(file: File): Promise<number> {
+  // Can either do locally or in worker, local is probably fast enough for just count
+  const { PDFDocument } = await import("pdf-lib");
   const bytes = await file.arrayBuffer();
   const pdf = await PDFDocument.load(bytes);
   return pdf.getPageCount();
