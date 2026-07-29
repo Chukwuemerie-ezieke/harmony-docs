@@ -126,6 +126,17 @@ export const tools: ToolDefinition[] = [
   },
   // Edit
   {
+    id: "sign-pdf",
+    name: "Sign PDF",
+    description: "Draw or upload your signature to sign a PDF",
+    icon: "PenTool",
+    category: "edit",
+    color: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
+    route: "/tool/sign-pdf",
+    acceptedTypes: [".pdf"],
+    multiple: false,
+  },
+  {
     id: "watermark",
     name: "Watermark",
     description: "Add text watermarks to your PDF",
@@ -170,6 +181,62 @@ export const tools: ToolDefinition[] = [
     acceptedTypes: [".pdf"],
     multiple: false,
   },
+  // Image Tools
+  {
+    id: "compress-image",
+    name: "Compress Image",
+    description: "Compress JPG, PNG, or WebP with best quality",
+    icon: "Minimize2",
+    category: "image",
+    color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    route: "/tool/compress-image",
+    acceptedTypes: [".jpg", ".jpeg", ".png", ".webp"],
+    multiple: false,
+  },
+  {
+    id: "resize-image",
+    name: "Resize Image",
+    description: "Change the pixel dimensions of your image",
+    icon: "Image",
+    category: "image",
+    color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    route: "/tool/resize-image",
+    acceptedTypes: [".jpg", ".jpeg", ".png", ".webp"],
+    multiple: false,
+  },
+  {
+    id: "crop-image",
+    name: "Crop Image",
+    description: "Crop and trim your image",
+    icon: "Scissors",
+    category: "image",
+    color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+    route: "/tool/crop-image",
+    acceptedTypes: [".jpg", ".jpeg", ".png", ".webp"],
+    multiple: false,
+  },
+  {
+    id: "rotate-image",
+    name: "Rotate Image",
+    description: "Rotate your images 90, 180 or 270 degrees",
+    icon: "RotateCw",
+    category: "image",
+    color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+    route: "/tool/rotate-image",
+    acceptedTypes: [".jpg", ".jpeg", ".png", ".webp"],
+    multiple: false,
+  },
+  {
+    id: "watermark-image",
+    name: "Watermark Image",
+    description: "Stamp an image or text over your images",
+    icon: "Droplets",
+    category: "image",
+    color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+    route: "/tool/watermark-image",
+    acceptedTypes: [".jpg", ".jpeg", ".png", ".webp"],
+    multiple: false,
+  },
 ];
 
 export const categories = [
@@ -177,6 +244,7 @@ export const categories = [
   { id: "convert", name: "Convert", description: "Transform between file formats" },
   { id: "edit", name: "Edit", description: "Modify and annotate your PDFs" },
   { id: "security", name: "Security", description: "Protect and unlock your documents" },
+  { id: "image", name: "Image Tools", description: "Manipulate and enhance image files" },
 ] as const;
 
 export function getToolById(id: string): ToolDefinition | undefined {

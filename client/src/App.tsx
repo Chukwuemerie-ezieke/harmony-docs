@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Switch, Route, Router } from "wouter";
 import { useHashLocation } from "wouter/use-hash-location";
+
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -28,6 +29,12 @@ const UnlockTool = lazy(() => import("@/pages/tools/unlock"));
 const RearrangeTool = lazy(() => import("@/pages/tools/rearrange"));
 const ExtractTool = lazy(() => import("@/pages/tools/extract"));
 const DeleteTool = lazy(() => import("@/pages/tools/delete-pages"));
+const SignPdfTool = lazy(() => import("@/pages/tools/sign-pdf"));
+const CompressImageTool = lazy(() => import("@/pages/tools/compress-image"));
+const ResizeImageTool = lazy(() => import("@/pages/tools/resize-image"));
+const CropImageTool = lazy(() => import("@/pages/tools/crop-image"));
+const RotateImageTool = lazy(() => import("@/pages/tools/rotate-image"));
+const WatermarkImageTool = lazy(() => import("@/pages/tools/watermark-image"));
 
 function LoadingFallback() {
   return (
@@ -62,6 +69,12 @@ function AppRouter() {
         <Route path="/tool/rearrange" component={RearrangeTool} />
         <Route path="/tool/extract" component={ExtractTool} />
         <Route path="/tool/delete" component={DeleteTool} />
+        <Route path="/tool/sign-pdf" component={SignPdfTool} />
+        <Route path="/tool/compress-image" component={CompressImageTool} />
+        <Route path="/tool/resize-image" component={ResizeImageTool} />
+        <Route path="/tool/crop-image" component={CropImageTool} />
+        <Route path="/tool/rotate-image" component={RotateImageTool} />
+        <Route path="/tool/watermark-image" component={WatermarkImageTool} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
