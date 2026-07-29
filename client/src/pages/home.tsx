@@ -7,6 +7,7 @@ import {
   ImagePlus, Image, Globe,
   Droplets, Type,
   Lock, Unlock,
+  PenTool,
   ShieldCheck, Zap, Server
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,8 +43,8 @@ export default function Home() {
           </p>
 
           <div className="flex justify-center gap-4">
-             <Button asChild size="lg" className="rounded-full px-8 text-base shadow-lg hover:shadow-primary/25 transition-all">
-                <a href="#tools">Explore Tools</a>
+             <Button onClick={() => document.getElementById("tools")?.scrollIntoView({ behavior: "smooth" })} size="lg" className="rounded-full px-8 text-base shadow-lg hover:shadow-primary/25 transition-all">
+                Explore Tools
              </Button>
           </div>
         </div>

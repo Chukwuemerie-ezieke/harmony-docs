@@ -22,7 +22,7 @@ export interface ToolDefinition {
   name: string;
   description: string;
   icon: string;
-  category: "organize" | "convert" | "edit" | "security";
+  category: "organize" | "convert" | "edit" | "security" | "image";
   color: string;
   route: string;
   acceptedTypes: string[];
