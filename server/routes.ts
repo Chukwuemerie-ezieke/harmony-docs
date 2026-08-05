@@ -1,3 +1,4 @@
+import { getErrorMessage } from "./utils/errors";
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
@@ -13,7 +14,10 @@ const upload = multer({
 
 function createTempFile(buffer: Buffer, ext: string): string {
   const tmpDir = os.tmpdir();
-  const tmpFile = path.join(tmpDir, `harmony_${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`);
+  const tmpFile = path.join(
+    tmpDir,
+    `harmony_${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`,
+  );
   fs.writeFileSync(tmpFile, buffer);
   return tmpFile;
 }
@@ -28,9 +32,8 @@ function cleanupFiles(...files: string[]) {
 
 export async function registerRoutes(
   httpServer: Server,
-  app: Express
+  app: Express,
 ): Promise<Server> {
-
   // Protect PDF with password (using qpdf)
   app.post("/api/protect", upload.single("file"), async (req, res) => {
     if (!req.file || !req.body.password) {
@@ -45,7 +48,7 @@ export async function registerRoutes(
       try {
         execSync(
           `qpdf --encrypt "${req.body.password}" "${req.body.password}" 256 -- "${inputFile}" "${outputFile}"`,
-          { timeout: 30000 }
+          { timeout: 30000 },
         );
       } catch {
         // Fallback: just return the original file with a note
@@ -55,10 +58,13 @@ export async function registerRoutes(
 
       const result = fs.readFileSync(outputFile);
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "attachment; filename=protected.pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=protected.pdf",
+      );
       res.send(result);
-    } catch (err: any) {
-      res.status(500).send("Failed to protect PDF: " + err.message);
+    } catch (err: unknown) {
+      res.status(500).send("Failed to protect PDF: " + getErrorMessage(err));
     } finally {
       cleanupFiles(inputFile, outputFile);
     }
@@ -77,7 +83,7 @@ export async function registerRoutes(
       try {
         execSync(
           `qpdf --password="${req.body.password}" --decrypt "${inputFile}" "${outputFile}"`,
-          { timeout: 30000 }
+          { timeout: 30000 },
         );
       } catch {
         // Fallback using pdf-lib (works for non-encrypted or simple cases)
@@ -88,8 +94,8 @@ export async function registerRoutes(
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", "attachment; filename=unlocked.pdf");
       res.send(result);
-    } catch (err: any) {
-      res.status(500).send("Failed to unlock PDF: " + err.message);
+    } catch (err: unknown) {
+      res.status(500).send("Failed to unlock PDF: " + getErrorMessage(err));
     } finally {
       cleanupFiles(inputFile, outputFile);
     }
@@ -107,17 +113,17 @@ export async function registerRoutes(
     try {
       // Try wkhtmltopdf or similar
       try {
-        execSync(
-          `wkhtmltopdf "${inputFile}" "${outputFile}"`,
-          { timeout: 30000 }
-        );
+        execSync(`wkhtmltopdf "${inputFile}" "${outputFile}"`, {
+          timeout: 30000,
+        });
       } catch {
         // Fallback: create a simple text-based PDF
         const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
         const pdfDoc = await PDFDocument.create();
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const page = pdfDoc.addPage();
-        const htmlContent = req.file.buffer.toString("utf-8")
+        const htmlContent = req.file.buffer
+          .toString("utf-8")
           .replace(/<[^>]*>/g, " ")
           .replace(/\s+/g, " ")
           .trim();
@@ -146,9 +152,21 @@ export async function registerRoutes(
           if (y < 50) {
             const newPage = pdfDoc.addPage();
             y = newPage.getHeight() - 50;
-            newPage.drawText(line, { x: 50, y, size: fontSize, font, color: rgb(0, 0, 0) });
+            newPage.drawText(line, {
+              x: 50,
+              y,
+              size: fontSize,
+              font,
+              color: rgb(0, 0, 0),
+            });
           } else {
-            page.drawText(line, { x: 50, y, size: fontSize, font, color: rgb(0, 0, 0) });
+            page.drawText(line, {
+              x: 50,
+              y,
+              size: fontSize,
+              font,
+              color: rgb(0, 0, 0),
+            });
           }
           y -= fontSize * 1.5;
         }
@@ -159,10 +177,13 @@ export async function registerRoutes(
 
       const result = fs.readFileSync(outputFile);
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "attachment; filename=converted.pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=converted.pdf",
+      );
       res.send(result);
-    } catch (err: any) {
-      res.status(500).send("Failed to convert HTML: " + err.message);
+    } catch (err: unknown) {
+      res.status(500).send("Failed to convert HTML: " + getErrorMessage(err));
     } finally {
       cleanupFiles(inputFile, outputFile);
     }
