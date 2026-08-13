@@ -13,7 +13,6 @@ import Home from "@/pages/home";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 
-// Lazy-loaded routes for code splitting
 const MergeTool = lazy(() => import("@/pages/tools/merge"));
 const SplitTool = lazy(() => import("@/pages/tools/split"));
 const CompressTool = lazy(() => import("@/pages/tools/compress"));
@@ -21,12 +20,14 @@ const RotateTool = lazy(() => import("@/pages/tools/rotate"));
 const PageNumbersTool = lazy(() => import("@/pages/tools/page-numbers"));
 const ImgToPdfTool = lazy(() => import("@/pages/tools/img-to-pdf"));
 const PdfToImgTool = lazy(() => import("@/pages/tools/pdf-to-img"));
-const HtmlToPdfTool = lazy(() => import("@/pages/tools/html-to-pdf"));
+const PdfToImagesTool = lazy(() => import("@/pages/tools/pdf-to-images-release2"));
+const HtmlToPdfTool = lazy(() => import("@/pages/tools/html-to-pdf-browser"));
 const WatermarkTool = lazy(() => import("@/pages/tools/watermark"));
 const AddTextTool = lazy(() => import("@/pages/tools/add-text"));
 const ProtectTool = lazy(() => import("@/pages/tools/protect"));
 const UnlockTool = lazy(() => import("@/pages/tools/unlock"));
 const RearrangeTool = lazy(() => import("@/pages/tools/rearrange"));
+const OrganizeTool = lazy(() => import("@/pages/tools/organize"));
 const ExtractTool = lazy(() => import("@/pages/tools/extract"));
 const DeleteTool = lazy(() => import("@/pages/tools/delete-pages"));
 const SignPdfTool = lazy(() => import("@/pages/tools/sign-pdf"));
@@ -61,12 +62,14 @@ function AppRouter() {
         <Route path="/tool/page-numbers" component={PageNumbersTool} />
         <Route path="/tool/img-to-pdf" component={ImgToPdfTool} />
         <Route path="/tool/pdf-to-img" component={PdfToImgTool} />
+        <Route path="/tool/pdf-to-images" component={PdfToImagesTool} />
         <Route path="/tool/html-to-pdf" component={HtmlToPdfTool} />
         <Route path="/tool/watermark" component={WatermarkTool} />
         <Route path="/tool/add-text" component={AddTextTool} />
         <Route path="/tool/protect" component={ProtectTool} />
         <Route path="/tool/unlock" component={UnlockTool} />
         <Route path="/tool/rearrange" component={RearrangeTool} />
+        <Route path="/tool/organize" component={OrganizeTool} />
         <Route path="/tool/extract" component={ExtractTool} />
         <Route path="/tool/delete" component={DeleteTool} />
         <Route path="/tool/sign-pdf" component={SignPdfTool} />
