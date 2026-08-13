@@ -4,6 +4,8 @@ import { downloadBlob, downloadAsZip, getPDFPageCount } from "@/lib/pdf-engine";
 import { PageRangeControls } from "@/components/page-range-controls";
 import { PdfExportControls, type PdfImageExportOptions } from "@/components/pdf-export-controls";
 
+const PDFJS_VERSION = "4.4.168";
+
 export default function PdfToImagesRelease2Tool() {
   const [pageCount, setPageCount] = useState(0);
   const [pages, setPages] = useState<number[]>([]);
@@ -18,8 +20,10 @@ export default function PdfToImagesRelease2Tool() {
       }}
       onProcess={async (files) => {
         const file = files[0];
-        const pdfjs = await import("pdfjs-dist");
-        const pdf = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+        if (!file) throw new Error("Choose one PDF file.");
+        const pdfjsLib: any = await import(`https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.mjs` as any);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.mjs`;
+        const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
         const selectedPages = pages.length ? pages : Array.from({ length: pdf.numPages }, (_, index) => index);
         const results: Array<{ name: string; data: Uint8Array }> = [];
         const baseName = file.name.replace(/\.pdf$/i, "");
