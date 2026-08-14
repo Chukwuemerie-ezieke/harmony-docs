@@ -1,34 +1,38 @@
+import { useState } from "react";
 import { ToolPage } from "@/pages/tool-page";
-import { imagesToPDF, downloadBlob } from "@/lib/pdf-engine";
+import { downloadBlob, imagesToPDF } from "@/lib/pdf-engine";
+import { BatchFileQueue } from "@/components/batch-file-queue";
 
 export default function ImgToPdfTool() {
+  const [queuedFiles, setQueuedFiles] = useState<File[]>([]);
+
   return (
     <ToolPage
       toolId="img-to-pdf"
       onProcess={async (files) => {
-        const data = await imagesToPDF(files);
-        return { data, message: "Images converted to PDF successfully" };
+        const orderedFiles = queuedFiles.length === files.length ? queuedFiles : files;
+        const data = await imagesToPDF(orderedFiles);
+        return { data, message: `${orderedFiles.length} images converted to PDF` };
       }}
-      onDownload={(data) => downloadBlob(data, "converted-images.pdf")}
+      onDownload={(data) => downloadBlob(data, "images.pdf")}
       downloadLabel="Download PDF"
-      instructions={{
-        title: "How to convert Images to PDF",
-        steps: [
-          "Upload one or more image files (JPG, PNG).",
-          "Rearrange the images by dragging them into your preferred order.",
-          "Click the conversion button to combine them into a single PDF."
-        ]
+      renderOptions={({ files, setFiles, onProcess, status }) => {
+        const syncedFiles = queuedFiles.length === files.length && queuedFiles.every((file, index) => file === files[index]) ? queuedFiles : files;
+        if (files.length && queuedFiles.length !== files.length) queueMicrotask(() => setQueuedFiles(files));
+        return files.length > 0 ? (
+          <div className="space-y-4">
+            <BatchFileQueue
+              files={syncedFiles}
+              accept="images"
+              title="Image page order"
+              onChange={(next) => { setQueuedFiles(next); setFiles(next); }}
+            />
+            <button type="button" onClick={onProcess} disabled={status === "processing" || !syncedFiles.length}>
+              {status === "processing" ? "Creating PDF…" : "Convert images to PDF"}
+            </button>
+          </div>
+        ) : null;
       }}
-      faqs={[
-        {
-          question: "What image formats are supported?",
-          answer: "Currently, we support the most common image formats: JPG and PNG."
-        },
-        {
-          question: "Will the images lose quality?",
-          answer: "We embed the images directly into the PDF document without aggressive re-compression, so they retain their original visual fidelity."
-        }
-      ]}
     >
       {() => null}
     </ToolPage>
