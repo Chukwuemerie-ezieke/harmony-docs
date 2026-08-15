@@ -29,3 +29,12 @@ If inline placement inside the shared `Layout` header is preferred over the floa
 2. Add the two icon files listed above before merging.
 3. Run `npm run check` and `npm run build`.
 4. Test Android Chrome installation, iOS Add to Home Screen, standalone launch, light/dark persistence, OS-preference fallback, floating control visibility across pages/breakpoints, and that no uploaded/generated document appears in Cache Storage.
+A theme helper persists the user’s selected light/dark mode in local storage and uses the operating-system preference when no selection is saved. A `ThemeToggle` component is provided for placement in the shared app header.
+
+## Required integration and validation
+
+1. Import `ThemeToggle`, initialize theme state with `getPreferredTheme`, call `applyTheme`, and place the control in the app’s shared header in `client/src/App.tsx`.
+2. Ensure the existing Tailwind theme exposes dark token values; do not replace global styles without preserving existing CSS variables.
+3. Add the two icon files listed above before merging.
+4. Run `npm run check` and `npm run build`.
+5. Test Android Chrome installation, iOS Add to Home Screen, standalone launch, light/dark persistence, OS-preference fallback, and that no uploaded/generated document appears in Cache Storage.
