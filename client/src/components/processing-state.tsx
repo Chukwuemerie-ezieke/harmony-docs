@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ToolResultAssurance } from "@/components/tool-result-assurance";
 
 type ProcessingStateProps = {
-  status: "idle" | "processing" | "success" | "error";
+  status: "idle" | "processing" | "done" | "error";
   message?: string;
   onDownload?: () => void;
   onReset?: () => void;

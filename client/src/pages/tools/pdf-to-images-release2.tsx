@@ -3,6 +3,7 @@ import { ToolPage } from "@/pages/tool-page";
 import { downloadBlob, downloadAsZip, getPDFPageCount } from "@/lib/pdf-engine";
 import { PageRangeControls } from "@/components/page-range-controls";
 import { PdfExportControls, type PdfImageExportOptions } from "@/components/pdf-export-controls";
+import { Card, CardContent } from "@/components/ui/card";
 
 const PDFJS_VERSION = "4.4.168";
 
@@ -21,7 +22,7 @@ export default function PdfToImagesRelease2Tool() {
       onProcess={async (files) => {
         const file = files[0];
         if (!file) throw new Error("Choose one PDF file.");
-        const pdfjsLib: any = await import(`https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.mjs` as any);
+        const pdfjsLib: any = await import(/* @vite-ignore */ `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.mjs`);
         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.mjs`;
         const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
         const selectedPages = pages.length ? pages : Array.from({ length: pdf.numPages }, (_, index) => index);
@@ -52,10 +53,12 @@ export default function PdfToImagesRelease2Tool() {
         if (files[0] && !pageCount) void getPDFPageCount(files[0]).then((count) => { setPageCount(count); setPages(Array.from({ length: count }, (_, index) => index)); });
         if (!files[0] && pageCount) { setPageCount(0); setPages([]); }
         return files[0] && pageCount ? (
-          <div>
-            <PageRangeControls pageCount={pageCount} onChange={setPages} />
-            <PdfExportControls options={options} onChange={setOptions} />
-          </div>
+          <Card className="mt-6 border shadow-sm">
+            <CardContent className="p-6 space-y-6">
+              <PageRangeControls pageCount={pageCount} onChange={setPages} />
+              <PdfExportControls options={options} onChange={setOptions} />
+            </CardContent>
+          </Card>
         ) : null;
       }}
     </ToolPage>

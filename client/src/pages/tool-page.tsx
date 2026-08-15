@@ -39,6 +39,7 @@ interface ToolPageProps {
     files: File[];
     onProcess: () => void;
     status: "idle" | "processing" | "done" | "error";
+    setFiles?: (files: File[]) => void;
   }) => React.ReactNode;
   onProcess?: (files: File[]) => Promise<{ data: any; message: string }>;
   onDownload?: (result: any) => void;
@@ -140,7 +141,7 @@ export function ToolPage({
 
               {/* Process button or custom options */}
               {renderOptions ? (
-                renderOptions({ files, onProcess: handleProcess, status })
+                renderOptions({ files, onProcess: handleProcess, status, setFiles })
               ) : (
                 files.length > 0 && (
                   <Button

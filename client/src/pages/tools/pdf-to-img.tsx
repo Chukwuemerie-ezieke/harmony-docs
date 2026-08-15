@@ -11,7 +11,7 @@ export default function PdfToImgTool() {
       toolId="pdf-to-img"
       onProcess={async (files) => {
         // Use pdf.js via CDN to render pages
-        const pdfjsLib = await import("https://esm.sh/pdfjs-dist@4.4.168/build/pdf.mjs" as any);
+        const pdfjsLib: any = await import(/* @vite-ignore */ "https://esm.sh/pdfjs-dist@4.4.168/build/pdf.mjs" as string);
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://esm.sh/pdfjs-dist@4.4.168/build/pdf.worker.mjs";
 
         const arrayBuffer = await files[0].arrayBuffer();

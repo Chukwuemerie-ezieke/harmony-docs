@@ -1,8 +1,10 @@
 import { Link } from "wouter";
 import { HarmonyLogo } from "./harmony-logo";
 import { ThemeToggle } from "./theme-toggle";
+import { useTheme } from "@/hooks/use-theme";
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { theme, setTheme } = useTheme();
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans text-foreground">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
@@ -25,7 +27,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               Contact
             </Link>
-            <ThemeToggle />
+            <ThemeToggle
+              theme={theme as any}
+              onToggle={() => setTheme(theme === "dark" ? "light" : "dark")}
+            />
           </nav>
         </div>
       </header>
