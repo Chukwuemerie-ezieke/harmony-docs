@@ -28,8 +28,8 @@ interface ToolPageProps {
   children: (props: {
     files: File[];
     setFiles: (f: File[]) => void;
-    status: "idle" | "processing" | "success" | "error";
-    setStatus: (s: "idle" | "processing" | "success" | "error") => void;
+    status: "idle" | "processing" | "done" | "error";
+    setStatus: (s: "idle" | "processing" | "done" | "error") => void;
     result: any;
     setResult: (r: any) => void;
     message: string;
@@ -37,11 +37,9 @@ interface ToolPageProps {
   }) => React.ReactNode;
   renderOptions?: (props: {
     files: File[];
-    setFiles: (files: File[]) => void;
     onProcess: () => void;
     status: "idle" | "processing" | "done" | "error";
     setFiles?: (files: File[]) => void;
-    status: "idle" | "processing" | "success" | "error";
   }) => React.ReactNode;
   onProcess?: (files: File[]) => Promise<{ data: any; message: string }>;
   onDownload?: (result: any) => void;
@@ -62,7 +60,7 @@ export function ToolPage({
 }: ToolPageProps) {
   const tool = getToolById(toolId);
   const [files, setFiles] = useState<File[]>([]);
-  const [status, setStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [result, setResult] = useState<any>(null);
   const [message, setMessage] = useState("");
 
@@ -76,7 +74,7 @@ export function ToolPage({
       const res = await onProcess(files);
       setResult(res.data);
       setMessage(res.message);
-      setStatus("success");
+      setStatus("done");
     } catch (err: any) {
       setMessage(err.message || "Something went wrong");
       setStatus("error");
@@ -143,7 +141,6 @@ export function ToolPage({
 
               {/* Process button or custom options */}
               {renderOptions ? (
-                renderOptions({ files, onProcess: handleProcess, status, setFiles })
                 renderOptions({ files, setFiles, onProcess: handleProcess, status })
               ) : (
                 files.length > 0 && (

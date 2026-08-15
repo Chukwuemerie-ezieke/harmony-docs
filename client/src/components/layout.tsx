@@ -3,7 +3,6 @@ import { HarmonyLogo } from "./harmony-logo";
 import { ThemeToggle } from "./theme-toggle";
 import { useTheme } from "@/hooks/use-theme";
 
-
 export function Layout({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
   return (
@@ -32,7 +31,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               theme={theme as any}
               onToggle={() => setTheme(theme === "dark" ? "light" : "dark")}
             />
-
           </nav>
         </div>
       </header>

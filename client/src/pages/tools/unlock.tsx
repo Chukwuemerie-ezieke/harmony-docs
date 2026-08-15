@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ToolPage } from "@/pages/tool-page";
-import { downloadBlob } from "@/lib/pdf-engine";
+import { unlockPDF, downloadBlob } from "@/lib/pdf-engine";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,23 +12,9 @@ export default function UnlockTool() {
     <ToolPage
       toolId="unlock"
       onProcess={async (files) => {
-        const formData = new FormData();
-        formData.append("file", files[0]);
-        formData.append("password", password);
-
-        const response = await fetch("./api/unlock", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const err = await response.text();
-          throw new Error(err || "Failed to unlock PDF. Check your password.");
-        }
-
-        const data = await response.arrayBuffer();
+        const data = await unlockPDF(files[0], password);
         return {
-          data: new Uint8Array(data),
+          data,
           message: "PDF unlocked successfully",
         };
       }}
@@ -49,7 +35,7 @@ export default function UnlockTool() {
             </div>
             <Button
               onClick={onProcess}
-              className="w-full"
+              className="w-full h-14 text-lg font-bold rounded-xl shadow-lg hover:shadow-primary/25 transition-all"
               size="lg"
               disabled={status === "processing" || !password}
               data-testid="process-btn"

@@ -11,7 +11,6 @@ function createItems(pageCount: number): PageItem[] {
 
 async function renderThumbnails(file: File, count: number): Promise<string[]> {
   const pdfjsLib: any = await import(/* @vite-ignore */ `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.mjs`);
-  const pdfjsLib: any = await import(/* @vite-ignore */ `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.mjs` as any);
   pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.mjs`;
   const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
   const thumbnails: string[] = [];
