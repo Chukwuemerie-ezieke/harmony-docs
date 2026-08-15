@@ -1,17 +1,27 @@
-import { Moon, Sun } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Theme } from "@/lib/theme";
 
-type ThemeToggleProps = {
-  theme: Theme;
-  onToggle: () => void;
-};
+export function ThemeToggle() {
+  const [isDark, setIsDark] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      : false
+  );
 
-export function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
-  const nextLabel = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
+
   return (
-    <Button type="button" variant="ghost" size="icon" onClick={onToggle} aria-label={nextLabel} title={nextLabel} data-testid="theme-toggle">
-      {theme === "dark" ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setIsDark(!isDark)}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      data-testid="theme-toggle"
+    >
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>
   );
 }
