@@ -25,7 +25,7 @@ export default function MergeTool() {
               files={syncedFiles}
               accept="pdfs"
               title="Merge order"
-              onChange={(next) => { setQueuedFiles(next); setFiles?.(next); }}
+              onChange={(next) => { setQueuedFiles(next); setFiles(next); }}
             />
             <button type="button" onClick={onProcess} disabled={status === "processing" || syncedFiles.length < 2}>
               {status === "processing" ? "Merging PDFs…" : "Merge PDFs"}
