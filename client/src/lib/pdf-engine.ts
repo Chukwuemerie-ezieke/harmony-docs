@@ -100,6 +100,14 @@ export async function protectPDF(
   return runInWorker("protect", { file: bytes, password });
 }
 
+export async function unlockPDF(
+  file: File,
+  password: string
+): Promise<Uint8Array> {
+  const bytes = await fileToBytes(file);
+  return runInWorker("unlock", { file: bytes, password });
+}
+
 export async function rearrangePDF(file: File, order: number[]): Promise<Uint8Array> {
   const bytes = await fileToBytes(file);
   return runInWorker("rearrange", { file: bytes, order });

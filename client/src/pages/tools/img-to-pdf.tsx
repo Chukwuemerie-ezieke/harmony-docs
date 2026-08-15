@@ -25,7 +25,7 @@ export default function ImgToPdfTool() {
               files={syncedFiles}
               accept="images"
               title="Image page order"
-              onChange={(next) => { setQueuedFiles(next); setFiles(next); }}
+              onChange={(next) => { setQueuedFiles(next); setFiles?.(next); }}
             />
             <button type="button" onClick={onProcess} disabled={status === "processing" || !syncedFiles.length}>
               {status === "processing" ? "Creating PDF…" : "Convert images to PDF"}

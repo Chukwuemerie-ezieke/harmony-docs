@@ -25,7 +25,7 @@ export default function OrganizePdfTool() {
           onComplete={(data) => {
             setResult(data);
             setMessage("PDF organised successfully.");
-            setStatus("success");
+            setStatus("done");
           }}
         />
       ) : null}

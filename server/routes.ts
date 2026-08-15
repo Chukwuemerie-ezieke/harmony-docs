@@ -69,38 +69,6 @@ export async function registerRoutes(
       cleanupFiles(inputFile, outputFile);
     }
   });
-
-  // Unlock PDF (using qpdf)
-  app.post("/api/unlock", upload.single("file"), async (req, res) => {
-    if (!req.file || !req.body.password) {
-      return res.status(400).send("File and password required");
-    }
-
-    const inputFile = createTempFile(req.file.buffer, ".pdf");
-    const outputFile = inputFile.replace(".pdf", "_unlocked.pdf");
-
-    try {
-      try {
-        execSync(
-          `qpdf --password="${req.body.password}" --decrypt "${inputFile}" "${outputFile}"`,
-          { timeout: 30000 },
-        );
-      } catch {
-        // Fallback using pdf-lib (works for non-encrypted or simple cases)
-        fs.copyFileSync(inputFile, outputFile);
-      }
-
-      const result = fs.readFileSync(outputFile);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "attachment; filename=unlocked.pdf");
-      res.send(result);
-    } catch (err: unknown) {
-      res.status(500).send("Failed to unlock PDF: " + getErrorMessage(err));
-    } finally {
-      cleanupFiles(inputFile, outputFile);
-    }
-  });
-
   // HTML to PDF (simple approach using the file content)
   app.post("/api/html-to-pdf", upload.single("file"), async (req, res) => {
     if (!req.file) {

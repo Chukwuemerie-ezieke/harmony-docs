@@ -1,4 +1,6 @@
 import { PDFDocument, rgb, degrees, StandardFonts } from "pdf-lib";
+import { encryptPDF } from "@pdfsmaller/pdf-encrypt";
+import { decryptPDF } from "@pdfsmaller/pdf-decrypt";
 
 self.onmessage = async (e: MessageEvent) => {
   const { action, id, payload } = e.data;
@@ -29,6 +31,9 @@ self.onmessage = async (e: MessageEvent) => {
         break;
       case "images-to-pdf":
         result = await handleImagesToPdf(payload.files, payload.types);
+        break;
+      case "unlock":
+        result = await handleUnlock(payload.file, payload.password);
         break;
       case "protect":
         result = await handleProtect(payload.file, payload.password);
@@ -197,10 +202,11 @@ async function handleImagesToPdf(filesData: Uint8Array[], types: string[]) {
 }
 
 async function handleProtect(bytes: Uint8Array, password: string) {
-  const pdf = await PDFDocument.load(bytes);
-  pdf.setTitle(pdf.getTitle() || "Protected Document");
-  pdf.setProducer("Harmony Docs - Harmony Digital Consults Ltd");
-  return await pdf.save();
+  return await encryptPDF(bytes, password);
+}
+
+async function handleUnlock(bytes: Uint8Array, password: string) {
+  return await decryptPDF(bytes, password);
 }
 
 async function handleRearrange(bytes: Uint8Array, order: number[]) {
