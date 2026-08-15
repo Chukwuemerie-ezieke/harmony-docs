@@ -1,51 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Harmony Docs — Document Toolkit by Harmony Digital Consults Ltd</title>
-    <meta name="description" content="Free online PDF and document tools. Merge, split, compress, convert, watermark, and secure your PDFs. Built by Harmony Digital Consults Ltd for educators, learners, and teams." />
-    <meta name="author" content="Harmony Digital Consults Ltd" />
-    <meta name="theme-color" content="#01696F" />
-    <meta property="og:title" content="Harmony Docs — Document Toolkit" />
-    <meta property="og:description" content="Free PDF tools by Harmony Digital Consults Ltd. Merge, split, compress, convert, and secure your documents." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="./harmony-logo.jpg" />
-    <link rel="icon" type="image/png" href="./favicon.png" />
-    <link rel="apple-touch-icon" href="./favicon.png" />
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID -->
-    <script>
-      window.HARMONY_GA_ID = "G-XXXXXXXXXX"; // <-- paste your real GA4 ID here
-      if (window.HARMONY_GA_ID && window.HARMONY_GA_ID !== "G-XXXXXXXXXX") {
-        var s = document.createElement("script");
-        s.async = true;
-        s.src = "https://www.googletagmanager.com/gtag/js?id=" + window.HARMONY_GA_ID;
-        document.head.appendChild(s);
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ dataLayer.push(arguments); }
-        window.gtag = gtag;
-        gtag("js", new Date());
-        gtag("config", window.HARMONY_GA_ID, { anonymize_ip: true });
-      }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <title>HarmonyDocs — Document tools</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // PWA service worker registration
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker.register("./sw.js").catch(function (err) {
-            console.warn("SW registration failed:", err);
-          });
-        });
-      }
-    </script>
   </body>
 </html>

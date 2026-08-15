@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { HarmonyLogo } from "./harmony-logo";
-import { ThemeToggle } from "./theme-toggle";
+
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,7 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               Contact
             </Link>
-            <ThemeToggle />
+
           </nav>
         </div>
       </header>

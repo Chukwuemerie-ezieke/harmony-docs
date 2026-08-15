@@ -1,22 +1,17 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { registerSW } from "virtual:pwa-register";
-import "./index.css";
 import App from "./App";
+import { AppShellControls } from "@/components/app-shell-controls";
+import "./index.css";
 
-// Set up service worker for offline support
-if ("serviceWorker" in navigator) {
-  const updateSW = registerSW({
-    onNeedRefresh() {
-      if (confirm("New content available. Reload?")) {
-        updateSW(true);
-      }
-    },
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    void navigator.serviceWorker.register("/sw.js");
   });
 }
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  <>
+    <AppShellControls />
     <App />
-  </StrictMode>,
+  </>
 );

@@ -1,27 +1,29 @@
 {
-  "name": "Harmony Docs — by Harmony Digital Consults Ltd",
-  "short_name": "Harmony Docs",
-  "description": "Free document toolkit for educators, learners, and teams. Merge, split, compress, convert, watermark, and secure your PDFs.",
-  "start_url": "./",
-  "scope": "./",
+  "name": "HarmonyDocs",
+  "short_name": "HarmonyDocs",
+  "description": "Secure document tools by Harmony Digital Consults Ltd.",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
   "background_color": "#ffffff",
-  "theme_color": "#01696F",
-  "lang": "en-NG",
-  "categories": ["productivity", "education", "utilities"],
+  "theme_color": "#0f766e",
   "icons": [
     {
-      "src": "./favicon.png",
-      "sizes": "256x256",
-      "type": "image/png",
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "./harmony-logo.jpg",
-      "sizes": "1024x1024",
-      "type": "image/jpeg",
-      "purpose": "any"
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
