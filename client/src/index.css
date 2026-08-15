@@ -4,96 +4,10 @@
 
 @layer base {
   :root {
-    --background: 215 25% 98%; /* hsl(186 25% 98%) Approx light theme */
-    --foreground: 184 31% 8%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 184 31% 8%;
-    --card-border: 184 10% 90%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 184 31% 8%;
-    --popover-border: 184 10% 90%;
-
-    /* Harmony Primary: #2fb8b8 ~ HSL 180, 59%, 45% */
-    --primary: 180 59% 45%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 180 15% 90%;
-    --secondary-foreground: 184 31% 8%;
-
-    --muted: 180 15% 94%;
-    --muted-foreground: 180 8% 45%;
-
-    --accent: 180 59% 94%;
-    --accent-foreground: 180 59% 45%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 180 15% 90%;
-    --input: 180 15% 90%;
-    --ring: 180 59% 45%;
-
-    --radius: 0.75rem;
-
-    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    color-scheme: light;
   }
 
   .dark {
-    /* Harmony Dark Background: #0e1a1b ~ HSL 185 31% 8% */
-    --background: 185 31% 8%;
-    /* Harmony Text: #d4e4e5 ~ HSL 184 21% 86% */
-    --foreground: 184 21% 86%;
-
-    /* Harmony Surface: #142223 ~ HSL 184 27% 11% */
-    --card: 184 27% 11%;
-    --card-foreground: 184 21% 86%;
-    /* Harmony Border: #2a4243 ~ HSL 182 23% 21% */
-    --card-border: 182 23% 21%;
-
-    --popover: 184 27% 11%;
-    --popover-foreground: 184 21% 86%;
-    --popover-border: 182 23% 21%;
-
-    /* Harmony Primary: #2fb8b8 ~ HSL 180 59% 45% */
-    --primary: 180 59% 45%;
-    --primary-foreground: 185 31% 8%;
-
-    /* Harmony Surface Alt: #1a2c2d ~ HSL 183 27% 14% */
-    --secondary: 183 27% 14%;
-    --secondary-foreground: 184 21% 86%;
-
-    --muted: 183 27% 14%;
-    /* Harmony Text Muted: #8aabac ~ HSL 182 17% 61% */
-    --muted-foreground: 182 17% 61%;
-
-    /* Harmony Accent Light: #162b2b ~ HSL 180 32% 13% */
-    --accent: 180 32% 13%;
-    --accent-foreground: 180 59% 45%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    /* Harmony Border: #2a4243 */
-    --border: 182 23% 21%;
-    --input: 182 23% 21%;
-    --ring: 180 59% 45%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+    color-scheme: dark;
   }
 }

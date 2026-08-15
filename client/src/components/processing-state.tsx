@@ -1,71 +1,53 @@
-import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, Download, Loader2, RotateCcw, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ToolResultAssurance } from "@/components/tool-result-assurance";
 
-interface ProcessingStateProps {
-  status: "idle" | "processing" | "done" | "error";
+type ProcessingStateProps = {
+  status: "idle" | "processing" | "success" | "error";
   message?: string;
   onDownload?: () => void;
   onReset?: () => void;
   downloadLabel?: string;
-}
+};
 
-export function ProcessingState({
-  status,
-  message,
-  onDownload,
-  onReset,
-  downloadLabel = "Download",
-}: ProcessingStateProps) {
+export function ProcessingState({ status, message, onDownload, onReset, downloadLabel = "Download" }: ProcessingStateProps) {
   if (status === "idle") return null;
 
+  if (status === "processing") {
+    return (
+      <div className="flex flex-col items-center gap-3 py-10 text-center" role="status" aria-live="polite">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
+        <div>
+          <p className="font-medium">Processing your file…</p>
+          <p className="text-sm text-muted-foreground">Please keep this tab open until processing is complete.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div className="flex flex-col items-center gap-3 py-8 text-center" role="alert">
+        <XCircle className="h-9 w-9 text-destructive" aria-hidden="true" />
+        <div>
+          <p className="font-medium">We couldn’t process that file</p>
+          {message && <p className="mt-1 text-sm text-muted-foreground">{message}</p>}
+        </div>
+        {onReset && <Button variant="outline" onClick={onReset}><RotateCcw className="mr-2 h-4 w-4" />Try another file</Button>}
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center gap-4 rounded-lg border p-6 text-center",
-        status === "processing" && "border-primary/30 bg-primary/5",
-        status === "done" && "border-emerald-500/30 bg-emerald-500/5",
-        status === "error" && "border-destructive/30 bg-destructive/5"
-      )}
-      data-testid="processing-state"
-    >
-      {status === "processing" && (
-        <>
-          <Loader2 className="h-8 w-8 text-primary animate-spin" />
-          <p className="text-sm text-muted-foreground">{message || "Processing your files..."}</p>
-        </>
-      )}
-
-      {status === "done" && (
-        <>
-          <CheckCircle2 className="h-8 w-8 text-emerald-500" />
-          <p className="text-sm font-medium text-foreground">{message || "Processing complete"}</p>
-          <div className="flex items-center gap-2 flex-wrap">
-            {onDownload && (
-              <Button onClick={onDownload} data-testid="download-btn">
-                {downloadLabel}
-              </Button>
-            )}
-            {onReset && (
-              <Button variant="outline" onClick={onReset} data-testid="reset-btn">
-                Process another
-              </Button>
-            )}
-          </div>
-        </>
-      )}
-
-      {status === "error" && (
-        <>
-          <AlertCircle className="h-8 w-8 text-destructive" />
-          <p className="text-sm text-destructive">{message || "Something went wrong"}</p>
-          {onReset && (
-            <Button variant="outline" onClick={onReset} data-testid="retry-btn">
-              Try again
-            </Button>
-          )}
-        </>
-      )}
+    <div className="py-8 text-center" role="status" aria-live="polite">
+      <CheckCircle2 className="mx-auto h-10 w-10 text-green-600" aria-hidden="true" />
+      <p className="mt-3 font-medium">Your file is ready</p>
+      {message && <p className="mt-1 text-sm text-muted-foreground">{message}</p>}
+      <div className="mt-5 flex flex-wrap justify-center gap-3">
+        {onDownload && <Button onClick={onDownload}><Download className="mr-2 h-4 w-4" />{downloadLabel}</Button>}
+        {onReset && <Button variant="outline" onClick={onReset}><RotateCcw className="mr-2 h-4 w-4" />Process another file</Button>}
+      </div>
+      <ToolResultAssurance />
     </div>
   );
 }
