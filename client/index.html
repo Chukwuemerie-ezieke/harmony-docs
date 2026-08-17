@@ -18,10 +18,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID -->
+    <!-- Google Analytics 4 -->
     <script>
-      window.HARMONY_GA_ID = "G-XXXXXXXXXX"; // <-- paste your real GA4 ID here
-      if (window.HARMONY_GA_ID && window.HARMONY_GA_ID !== "G-XXXXXXXXXX") {
+      window.HARMONY_GA_ID = "G-DQ50P3CHGP";
+      if (window.HARMONY_GA_ID) {
         var s = document.createElement("script");
         s.async = true;
         s.src = "https://www.googletagmanager.com/gtag/js?id=" + window.HARMONY_GA_ID;
@@ -38,7 +38,6 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // PWA service worker registration
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
           navigator.serviceWorker.register("./sw.js").catch(function (err) {
