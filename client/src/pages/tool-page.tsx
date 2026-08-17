@@ -74,8 +74,15 @@ export function ToolPage({
       setResult(res.data);
       setMessage(res.message);
       setStatus("done");
-    } catch (err: any) {
-      setMessage(err.message || "Something went wrong");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === "string" && err.trim()
+            ? err
+            : "Something went wrong";
+
+      setMessage(message);
       setStatus("error");
     }
   }, [files, onProcess]);
