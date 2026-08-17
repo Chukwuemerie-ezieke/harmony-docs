@@ -2,7 +2,7 @@ import { getErrorMessage } from "./utils/errors";
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import os from "os";
@@ -40,15 +40,32 @@ export async function registerRoutes(
       return res.status(400).send("File and password required");
     }
 
+    if (
+      typeof req.body.password !== "string" ||
+      req.body.password.length === 0 ||
+      req.body.password.length > 1024
+    ) {
+      return res.status(400).send("Invalid password format or length");
+    }
+
     const inputFile = createTempFile(req.file.buffer, ".pdf");
     const outputFile = inputFile.replace(".pdf", "_protected.pdf");
 
     try {
       // Try qpdf first
       try {
-        execSync(
-          `qpdf --encrypt "${req.body.password}" "${req.body.password}" 256 -- "${inputFile}" "${outputFile}"`,
-          { timeout: 30000 },
+        execFileSync(
+          "qpdf",
+          [
+            "--encrypt",
+            req.body.password,
+            req.body.password,
+            "256",
+            "--",
+            inputFile,
+            outputFile,
+          ],
+          { timeout: 30000, shell: false },
         );
       } catch {
         // Fallback: just return the original file with a note
@@ -76,14 +93,28 @@ export async function registerRoutes(
       return res.status(400).send("File and password required");
     }
 
+    if (
+      typeof req.body.password !== "string" ||
+      req.body.password.length === 0 ||
+      req.body.password.length > 1024
+    ) {
+      return res.status(400).send("Invalid password format or length");
+    }
+
     const inputFile = createTempFile(req.file.buffer, ".pdf");
     const outputFile = inputFile.replace(".pdf", "_unlocked.pdf");
 
     try {
       try {
-        execSync(
-          `qpdf --password="${req.body.password}" --decrypt "${inputFile}" "${outputFile}"`,
-          { timeout: 30000 },
+        execFileSync(
+          "qpdf",
+          [
+            `--password=${req.body.password}`,
+            "--decrypt",
+            inputFile,
+            outputFile,
+          ],
+          { timeout: 30000, shell: false },
         );
       } catch {
         // Fallback using pdf-lib (works for non-encrypted or simple cases)
@@ -113,8 +144,9 @@ export async function registerRoutes(
     try {
       // Try wkhtmltopdf or similar
       try {
-        execSync(`wkhtmltopdf "${inputFile}" "${outputFile}"`, {
+        execFileSync("wkhtmltopdf", [inputFile, outputFile], {
           timeout: 30000,
+          shell: false,
         });
       } catch {
         // Fallback: create a simple text-based PDF
