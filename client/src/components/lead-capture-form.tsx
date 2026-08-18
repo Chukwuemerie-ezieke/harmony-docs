@@ -66,9 +66,11 @@ export function LeadCaptureForm({
 
   function handleStart() {
     void trackPublicEvent("lead_form_started", {
+      tool_id: context.sourceTool,
       tool_slug: context.sourceTool,
+      source_tool: context.sourceTool,
       cta_id: context.sourceCta,
-      source_page: "consultation_form",
+      source_page: context.sourceCta ? "tool_result" : "contact",
     });
   }
 
@@ -91,9 +93,11 @@ export function LeadCaptureForm({
       setMessage(result.message);
       setForm(initialForm);
       void trackPublicEvent("lead_form_submitted", {
+        tool_id: context.sourceTool,
         tool_slug: context.sourceTool,
+        source_tool: context.sourceTool,
         cta_id: context.sourceCta,
-        source_page: "consultation_form",
+        source_page: context.sourceCta ? "tool_result" : "contact",
         outcome: "success",
       });
     } catch {
