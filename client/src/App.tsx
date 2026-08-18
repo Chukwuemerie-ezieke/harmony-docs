@@ -54,8 +54,12 @@ function AppRouter() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/home" component={Home} />
+        <Route path="/tools" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
+        <Route path="/book-consultation" component={Contact} />
+        <Route path="/book-a-consultation" component={Contact} />
+        <Route path="/consultation" component={Contact} />
         <Route path="/tool/merge" component={MergeTool} />
         <Route path="/tool/split" component={SplitTool} />
         <Route path="/tool/compress" component={CompressTool} />
@@ -75,6 +79,8 @@ function AppRouter() {
         <Route path="/tool/delete" component={DeleteTool} />
         <Route path="/tool/sign-pdf" component={SignPdfTool} />
         <Route path="/tool/compress-image" component={CompressImageTool} />
+        <Route path="/compress-image" component={CompressImageTool} />
+        <Route path="/compress-image/" component={CompressImageTool} />
         <Route path="/tool/resize-image" component={ResizeImageTool} />
         <Route path="/tool/crop-image" component={CropImageTool} />
         <Route path="/tool/rotate-image" component={RotateImageTool} />
