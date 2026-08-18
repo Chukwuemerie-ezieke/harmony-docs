@@ -156,7 +156,7 @@ export function ToolPage({
       </div>
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12 -mt-16 relative z-10">
-        <Link href="/#tools" data-testid="back-link">
+        <Link href="#/tools" data-testid="back-link">
           <div className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6 cursor-pointer bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-border shadow-sm">
             <ArrowLeft className="h-4 w-4" />
             Back to tools
