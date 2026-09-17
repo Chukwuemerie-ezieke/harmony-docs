@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout";
+import { LeadCaptureForm } from "@/components/lead-capture-form";
 import { Phone, MapPin, Globe, Mail, Github, Linkedin } from "lucide-react";
 
 const contactItems = [
@@ -114,6 +115,10 @@ export default function ContactPage() {
             <div className="text-muted-foreground">
               Harmony Digital Consults Ltd · RC 8949899 · Incorporated October 25, 2025
             </div>
+          </div>
+
+          <div className="mt-12 border-t border-border/60 pt-10">
+            <LeadCaptureForm />
           </div>
         </div>
       </section>

@@ -2,6 +2,7 @@ import { CheckCircle2, Download, Loader2, RotateCcw, XCircle, X } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ToolResultAssurance } from "@/components/tool-result-assurance";
+import { NextToolSuggestions } from "@/components/next-tool-suggestions";
 import type { ProcessProgress, ToolStatus } from "@/lib/tool-workflow";
 
 type ProcessingStateProps = {
@@ -13,6 +14,10 @@ type ProcessingStateProps = {
   onCancel?: () => void;
   onRetry?: () => void;
   downloadLabel?: string;
+  /** Tool id used to suggest relevant follow-up tools after success. */
+  toolId?: string;
+  /** A single-file PDF result to carry into the next tool, if applicable. */
+  handoffFile?: File | null;
 };
 
 export function ProcessingState({
@@ -24,6 +29,8 @@ export function ProcessingState({
   onCancel,
   onRetry,
   downloadLabel = "Download",
+  toolId,
+  handoffFile,
 }: ProcessingStateProps) {
   if (status === "idle") return null;
 
@@ -98,7 +105,8 @@ export function ProcessingState({
           </Button>
         )}
       </div>
-      <ToolResultAssurance />
+      {toolId && <NextToolSuggestions fromToolId={toolId} handoffFile={handoffFile} />}
+      <ToolResultAssurance toolId={toolId} />
     </div>
   );
 }

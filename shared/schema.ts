@@ -48,4 +48,11 @@ export interface ToolDefinition {
   maxFileBytes?: number;
   /** Minimum number of files required before the tool can run. */
   minFiles?: number;
+  /** Extra search terms and task phrases used by discovery/search. */
+  keywords?: string[];
+  /**
+   * Tool ids suggested as a next step after this tool completes.
+   * Powers the result-to-next-tool workflow recommendations.
+   */
+  relatedTools?: string[];
 }

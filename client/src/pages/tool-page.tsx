@@ -5,6 +5,8 @@ import { FileDropzone } from "@/components/file-dropzone";
 import { ProcessingState } from "@/components/processing-state";
 import { getToolById } from "@/lib/tools";
 import { resolveTool } from "@/lib/tool-registry";
+import { useRecordRecent } from "@/hooks/use-tool-preferences";
+import { consumeHandoff, fileFromResult } from "@/lib/tool-handoff";
 import { trackPublicEvent } from "@/lib/privacy-analytics";
 import { toUserError, CancelledError } from "@/lib/tool-errors";
 import type { ProcessContext, ProcessProgress, ProcessOutcome, ToolStatus } from "@/lib/tool-workflow";
@@ -85,6 +87,20 @@ export function ToolPage({
   const analyticsAttributes = tool
     ? { tool_id: toolId, tool_slug: toolId, tool_category: tool.category }
     : { tool_id: toolId, tool_slug: toolId };
+
+  // Record recently-used tools (local, device-only) for the discovery view.
+  useRecordRecent(tool ? toolId : undefined);
+
+  // Pick up a file handed off from a previous tool's "next step", so the user
+  // continues with their result without re-uploading.
+  useEffect(() => {
+    const incoming = consumeHandoff(toolId);
+    if (incoming) {
+      hadFilesRef.current = true;
+      setFiles([incoming]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toolId]);
 
   useEffect(() => {
     if (tool) {
@@ -186,6 +202,13 @@ export function ToolPage({
     void runProcess();
   }, [runProcess]);
 
+  // A single-file PDF result can be carried into a follow-up tool. Multi-file
+  // results (e.g. split/pdf-to-images arrays) are not handed off.
+  const handoffFile =
+    status === "done" && result instanceof Uint8Array
+      ? fileFromResult(result, `${toolId}-result.pdf`)
+      : null;
+
   if (!tool) {
     return (
       <Layout>
@@ -263,6 +286,8 @@ export function ToolPage({
             onCancel={handleCancel}
             onRetry={onProcess ? handleRetry : undefined}
             downloadLabel={downloadLabel}
+            toolId={toolId}
+            handoffFile={handoffFile}
           />
         </div>
       </div>
