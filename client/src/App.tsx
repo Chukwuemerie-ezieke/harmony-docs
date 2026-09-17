@@ -81,8 +81,6 @@ function AppRouter() {
         <Route path="/tool/delete" component={DeleteTool} />
         <Route path="/tool/sign-pdf" component={SignPdfTool} />
         <Route path="/tool/compress-image" component={CompressImageTool} />
-        <Route path="/compress-image" component={CompressImageTool} />
-        <Route path="/compress-image/" component={CompressImageTool} />
         <Route path="/tool/resize-image" component={ResizeImageTool} />
         <Route path="/tool/crop-image" component={CropImageTool} />
         <Route path="/tool/rotate-image" component={RotateImageTool} />

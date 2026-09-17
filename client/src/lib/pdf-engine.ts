@@ -8,7 +8,7 @@ function getWorker() {
   return worker;
 }
 
-function runInWorker(action: string, payload: any): Promise<any> {
+export function runInWorker(action: string, payload: any): Promise<any> {
   return new Promise((resolve, reject) => {
     const w = getWorker();
     const id = Math.random().toString(36).substring(7);

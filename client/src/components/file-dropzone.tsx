@@ -1,8 +1,9 @@
 import { useCallback, useState, useRef, useId } from "react";
-import { Upload, FileText, X, GripVertical } from "lucide-react";
+import { Upload, FileText, X, GripVertical, AlertTriangle } from "lucide-react";
 import { PdfPreview } from "./pdf-preview";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { validateFiles } from "@/lib/file-validation";
 
 interface FileDropzoneProps {
   accept: string[];
@@ -10,7 +11,12 @@ interface FileDropzoneProps {
   files: File[];
   onFilesChange: (files: File[]) => void;
   maxFiles?: number;
+  maxFileBytes?: number;
   reorderable?: boolean;
+  /** Validation notices to display (rejected/trimmed files). */
+  notices?: string[];
+  /** Called with new validation notices after a selection. */
+  onNotices?: (notices: string[]) => void;
 }
 
 export function FileDropzone({
@@ -19,7 +25,10 @@ export function FileDropzone({
   files,
   onFilesChange,
   maxFiles = 50,
+  maxFileBytes = 100 * 1024 * 1024,
   reorderable = false,
+  notices = [],
+  onNotices,
 }: FileDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -30,19 +39,16 @@ export function FileDropzone({
 
   const handleFiles = useCallback(
     (newFiles: FileList | File[]) => {
-      const arr = Array.from(newFiles);
-      const validFiles = arr.filter((f) => {
-        const ext = `.${f.name.split(".").pop()?.toLowerCase()}`;
-        return accept.includes(ext) || accept.includes(f.type);
+      const { accepted, rejections } = validateFiles(Array.from(newFiles), files, {
+        acceptedTypes: accept,
+        multiple,
+        maxFiles,
+        maxFileBytes,
       });
-      if (multiple) {
-        const combined = [...files, ...validFiles].slice(0, maxFiles);
-        onFilesChange(combined);
-      } else {
-        onFilesChange(validFiles.slice(0, 1));
-      }
+      onNotices?.(rejections);
+      onFilesChange(accepted);
     },
-    [accept, files, multiple, maxFiles, onFilesChange]
+    [accept, files, multiple, maxFiles, maxFileBytes, onFilesChange, onNotices]
   );
 
   const handleDrop = useCallback(
@@ -58,6 +64,7 @@ export function FileDropzone({
 
   const removeFile = (index: number) => {
     onFilesChange(files.filter((_, i) => i !== index));
+    onNotices?.([]);
   };
 
   const handleReorderDragStart = (index: number) => {
@@ -126,6 +133,22 @@ export function FileDropzone({
         />
       </label>
 
+      {notices.length > 0 && (
+        <div
+          className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200"
+          role="status"
+          aria-live="polite"
+          data-testid="dropzone-notices"
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <ul className="space-y-1">
+            {notices.map((notice, index) => (
+              <li key={index}>{notice}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {files.length > 0 && (
         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 rounded-lg" data-testid="file-list">
           {files.map((file, i) => (
@@ -148,14 +171,14 @@ export function FileDropzone({
               data-testid={`file-item-${i}`}
             >
               {reorderable && (
-                <GripVertical className="h-5 w-5 text-muted-foreground/50 shrink-0" />
+                <GripVertical className="h-5 w-5 text-muted-foreground/50 shrink-0" aria-hidden="true" />
               )}
               <div className="h-12 w-10 shrink-0">
                  {file.type === "application/pdf" ? (
                    <PdfPreview file={file} className="h-full w-full object-cover rounded shadow-sm" />
                  ) : (
                    <div className="h-full w-full rounded bg-primary/10 flex items-center justify-center">
-                     <FileText className="h-4 w-4 text-primary" />
+                     <FileText className="h-4 w-4 text-primary" aria-hidden="true" />
                    </div>
                  )}
               </div>
@@ -167,13 +190,14 @@ export function FileDropzone({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                aria-label={`Remove ${file.name}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   removeFile(i);
                 }}
                 data-testid={`remove-file-${i}`}
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
           ))}

@@ -4,12 +4,15 @@ import { Layout } from "@/components/layout";
 import { FileDropzone } from "@/components/file-dropzone";
 import { ProcessingState } from "@/components/processing-state";
 import { getToolById } from "@/lib/tools";
+import { resolveTool } from "@/lib/tool-registry";
 import { trackPublicEvent } from "@/lib/privacy-analytics";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { toUserError, CancelledError } from "@/lib/tool-errors";
+import type { ProcessContext, ProcessProgress, ProcessOutcome, ToolStatus } from "@/lib/tool-workflow";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -21,28 +24,37 @@ import {
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
 };
+
+interface ToolChildrenProps {
+  files: File[];
+  setFiles: (f: File[]) => void;
+  status: ToolStatus;
+  setStatus: (s: ToolStatus) => void;
+  result: any;
+  setResult: (r: any) => void;
+  message: string;
+  setMessage: (m: string) => void;
+}
+
+interface ToolRenderOptionsProps {
+  files: File[];
+  setFiles: (f: File[]) => void;
+  onProcess: () => void;
+  status: ToolStatus;
+}
 
 interface ToolPageProps {
   toolId: string;
-  children: (props: {
-    files: File[];
-    setFiles: (f: File[]) => void;
-    status: "idle" | "processing" | "done" | "error";
-    setStatus: (s: "idle" | "processing" | "done" | "error") => void;
-    result: any;
-    setResult: (r: any) => void;
-    message: string;
-    setMessage: (m: string) => void;
-  }) => React.ReactNode;
-  renderOptions?: (props: {
-    files: File[];
-    setFiles: (f: File[]) => void;
-    onProcess: () => void;
-    status: "idle" | "processing" | "done" | "error";
-  }) => React.ReactNode;
-  onProcess?: (files: File[]) => Promise<{ data: any; message: string }>;
+  children: (props: ToolChildrenProps) => React.ReactNode;
+  renderOptions?: (props: ToolRenderOptionsProps) => React.ReactNode;
+  /**
+   * The processing function. Receives the selected files plus an optional
+   * ProcessContext (AbortSignal + progress reporter). Tools that don't need
+   * progress/cancellation can simply ignore the second argument.
+   */
+  onProcess?: (files: File[], context: ProcessContext) => Promise<ProcessOutcome>;
   onDownload?: (result: any) => void;
   downloadLabel?: string;
   instructions?: { title: string; steps: string[] };
@@ -59,12 +71,16 @@ export function ToolPage({
   instructions,
   faqs,
 }: ToolPageProps) {
-  const tool = getToolById(toolId);
+  const rawTool = getToolById(toolId);
+  const tool = rawTool ? resolveTool(rawTool) : undefined;
   const [files, setFiles] = useState<File[]>([]);
-  const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
+  const [status, setStatus] = useState<ToolStatus>("idle");
   const [result, setResult] = useState<any>(null);
   const [message, setMessage] = useState("");
+  const [progress, setProgress] = useState<ProcessProgress | null>(null);
+  const [notices, setNotices] = useState<string[]>([]);
   const hadFilesRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   const analyticsAttributes = tool
     ? { tool_id: toolId, tool_slug: toolId, tool_category: tool.category }
@@ -74,7 +90,20 @@ export function ToolPage({
     if (tool) {
       void trackPublicEvent("tool_opened", analyticsAttributes);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toolId]);
+
+  // Guard against un-downloaded work being lost if the user navigates away
+  // mid-processing.
+  useEffect(() => {
+    if (status !== "processing") return;
+    const handler = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [status]);
 
   const Icon = tool ? iconMap[tool.icon] : null;
 
@@ -87,39 +116,59 @@ export function ToolPage({
       hadFilesRef.current = false;
     }
     setFiles(nextFiles);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toolId, tool?.category]);
 
-  const handleProcess = useCallback(async () => {
+  const runProcess = useCallback(async () => {
     if (!onProcess || files.length === 0) return;
+    const controller = new AbortController();
+    abortRef.current = controller;
     setStatus("processing");
-    setMessage("Processing your files...");
+    setProgress(null);
+    setMessage("Processing your files…");
     try {
-      const res = await onProcess(files);
+      const context: ProcessContext = {
+        signal: controller.signal,
+        onProgress: (next) => setProgress(next),
+      };
+      const res = await onProcess(files, context);
+      if (controller.signal.aborted) return;
       setResult(res.data);
       setMessage(res.message);
       void trackPublicEvent("processing_completed", analyticsAttributes);
       setStatus("done");
     } catch (err: unknown) {
-      const nextMessage =
-        err instanceof Error
-          ? err.message
-          : typeof err === "string" && err.trim()
-            ? err
-            : "Something went wrong";
-
-      void trackPublicEvent("processing_failed", {
-        ...analyticsAttributes,
-        error_code: "processing_error",
-      });
-      setMessage(nextMessage);
+      if (err instanceof CancelledError || controller.signal.aborted) {
+        setStatus("idle");
+        setMessage("");
+        setProgress(null);
+        return;
+      }
+      const { message: userMessage, code } = toUserError(err);
+      void trackPublicEvent("processing_failed", { ...analyticsAttributes, error_code: code });
+      setMessage(userMessage);
       setStatus("error");
+    } finally {
+      abortRef.current = null;
+      setProgress(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files, onProcess, toolId, tool?.category]);
+
+  const handleCancel = useCallback(() => {
+    abortRef.current?.abort();
+    // Return to the idle upload state immediately; the in-flight processor's
+    // resolution is ignored because its controller is aborted.
+    setStatus("idle");
+    setMessage("");
+    setProgress(null);
+  }, []);
 
   const handleDownload = useCallback(() => {
     if (!onDownload) return;
     void trackPublicEvent("download_clicked", analyticsAttributes);
     onDownload(result);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onDownload, result, toolId, tool?.category]);
 
   const handleReset = () => {
@@ -128,7 +177,14 @@ export function ToolPage({
     setStatus("idle");
     setResult(null);
     setMessage("");
+    setProgress(null);
+    setNotices([]);
   };
+
+  // Retry keeps the same files/settings and re-runs processing.
+  const handleRetry = useCallback(() => {
+    void runProcess();
+  }, [runProcess]);
 
   if (!tool) {
     return (
@@ -173,19 +229,22 @@ export function ToolPage({
                 files={files}
                 onFilesChange={handleFilesChange}
                 reorderable={tool.multiple}
+                maxFiles={tool.maxFiles}
+                maxFileBytes={tool.maxFileBytes}
+                notices={notices}
+                onNotices={setNotices}
               />
 
               {children({ files, setFiles: handleFilesChange, status, setStatus, result, setResult, message, setMessage })}
 
               {renderOptions ? (
-                renderOptions({ files, setFiles: handleFilesChange, onProcess: handleProcess, status })
+                renderOptions({ files, setFiles: handleFilesChange, onProcess: runProcess, status })
               ) : (
                 files.length > 0 && (
                   <Button
-                    onClick={handleProcess}
+                    onClick={runProcess}
                     className="w-full h-14 text-lg font-bold rounded-xl shadow-lg hover:shadow-primary/25 transition-all"
                     size="lg"
-                    disabled={false}
                     data-testid="process-btn"
                   >
                     {tool.name}
@@ -198,8 +257,11 @@ export function ToolPage({
           <ProcessingState
             status={status}
             message={message}
+            progress={progress}
             onDownload={onDownload ? handleDownload : undefined}
             onReset={handleReset}
+            onCancel={handleCancel}
+            onRetry={onProcess ? handleRetry : undefined}
             downloadLabel={downloadLabel}
           />
         </div>

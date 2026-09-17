@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolPage } from "@/pages/tool-page";
-import { downloadAsZip, downloadBlob, getPDFPageCount } from "@/lib/pdf-engine";
+import { downloadAsZip, downloadBlob } from "@/lib/pdf-engine";
 import { splitPdfByRanges } from "@/lib/pdf-release1-engine";
 import { parsePageRanges } from "@/lib/pdf-release1";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePdfPageCount } from "@/hooks/use-pdf-page-count";
 
 export default function SplitTool() {
   const [pageCount, setPageCount] = useState(0);
@@ -44,24 +45,52 @@ export default function SplitTool() {
         { question: "How are the split pages named?", answer: "Split files are named using the original file name plus a part number." },
         { question: "Will the quality be reduced?", answer: "No, splitting simply separates pages into new files without altering content quality." },
       ]}
-      renderOptions={({ files, onProcess, status }) => {
-        if (files[0] && !pageCount) void getPDFPageCount(files[0]).then(setPageCount);
-        if (!files[0] && pageCount) setPageCount(0);
-        return files.length > 0 && pageCount > 0 ? (
-          <div>
-            <Label>Custom ranges (optional)</Label>
-            <Input
-              value={rangesText}
-              onChange={(event) => { setRangesText(event.target.value); setError(""); }}
-              placeholder={`Leave blank for one file per page, or e.g. 1-3;4-6 (1-${pageCount})`}
-            />
-            {error && <p role="alert">{error}</p>}
-            <Button onClick={onProcess} disabled={status === "processing"}>Split PDF</Button>
-          </div>
-        ) : null;
-      }}
+      renderOptions={({ files, onProcess, status }) => (
+        <SplitOptions
+          file={files[0]}
+          rangesText={rangesText}
+          setRangesText={(v) => { setRangesText(v); setError(""); }}
+          error={error}
+          onPageCount={setPageCount}
+          onProcess={onProcess}
+          status={status}
+        />
+      )}
     >
       {() => null}
     </ToolPage>
+  );
+}
+
+function SplitOptions({
+  file, rangesText, setRangesText, error, onPageCount, onProcess, status,
+}: {
+  file: File | undefined;
+  rangesText: string;
+  setRangesText: (v: string) => void;
+  error: string;
+  onPageCount: (count: number) => void;
+  onProcess: () => void;
+  status: string;
+}) {
+  const { pageCount } = usePdfPageCount(file);
+  useEffect(() => { onPageCount(pageCount); }, [pageCount, onPageCount]);
+  if (!file || pageCount === 0) return null;
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="split-ranges" className="text-base">Custom ranges (optional)</Label>
+        <Input
+          id="split-ranges"
+          value={rangesText}
+          onChange={(event) => setRangesText(event.target.value)}
+          placeholder={`Leave blank for one file per page, or e.g. 1-3;4-6 (1-${pageCount})`}
+        />
+        {error && <p className="text-sm text-destructive font-medium" role="alert">{error}</p>}
+      </div>
+      <Button onClick={onProcess} className="w-full" size="lg" disabled={status === "processing"} data-testid="process-btn">
+        {status === "processing" ? "Splitting…" : "Split PDF"}
+      </Button>
+    </div>
   );
 }

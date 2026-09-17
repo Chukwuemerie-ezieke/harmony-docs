@@ -1,6 +1,7 @@
 import { ToolPage } from "@/pages/tool-page";
 import { downloadBlob, mergePDFs } from "@/lib/pdf-engine";
 import { BatchFileQueue } from "@/components/batch-file-queue";
+import { Button } from "@/components/ui/button";
 
 export default function MergeTool() {
   return (
@@ -21,14 +22,15 @@ export default function MergeTool() {
               title="Merge order"
               onChange={(next) => setFiles(next)}
             />
-            <button
-              type="button"
+            <Button
               onClick={onProcess}
+              className="w-full"
+              size="lg"
               disabled={status === "processing" || files.length < 2}
-              className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              data-testid="process-btn"
             >
               {status === "processing" ? "Merging PDFs…" : "Merge PDFs"}
-            </button>
+            </Button>
             {files.length < 2 && (
               <p className="text-sm text-muted-foreground">Add at least two PDF files to merge.</p>
             )}

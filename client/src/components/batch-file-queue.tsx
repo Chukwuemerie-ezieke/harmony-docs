@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { ArrowUp, ArrowDown, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type QueuedFile = {
   id: string;
@@ -64,7 +66,7 @@ export function BatchFileQueue({ files, accept = "files", onChange, title = "Fil
     <section aria-label={title} className="space-y-3" data-testid="batch-file-queue">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-medium">{title} — {items.length} {items.length === 1 ? "file" : "files"}</p>
-        <button type="button" className="text-sm underline" onClick={() => commit([])} data-testid="clear-queue">Clear all</button>
+        <Button variant="ghost" size="sm" className="h-auto px-2 py-1 text-sm" onClick={() => commit([])} data-testid="clear-queue">Clear all</Button>
       </div>
       <p className="text-xs text-muted-foreground">Drag files to set the output order. The first item becomes the first page or document.</p>
       <ol className="grid gap-2 sm:grid-cols-2" aria-label="Queued files">
@@ -86,9 +88,15 @@ export function BatchFileQueue({ files, accept = "files", onChange, title = "Fil
             )}
             <span className="min-w-0 flex-1 truncate text-sm" title={item.file.name}>{item.file.name}</span>
             <div className="flex items-center gap-1">
-              <button type="button" aria-label={`Move ${item.file.name} earlier`} onClick={() => move(index, -1)} disabled={index === 0}>↑</button>
-              <button type="button" aria-label={`Move ${item.file.name} later`} onClick={() => move(index, 1)} disabled={index === items.length - 1}>↓</button>
-              <button type="button" aria-label={`Remove ${item.file.name}`} onClick={() => remove(item.id)}>×</button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Move ${item.file.name} earlier`} onClick={() => move(index, -1)} disabled={index === 0} data-testid={`queue-up-${index}`}>
+                <ArrowUp className="h-4 w-4" aria-hidden="true" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Move ${item.file.name} later`} onClick={() => move(index, 1)} disabled={index === items.length - 1} data-testid={`queue-down-${index}`}>
+                <ArrowDown className="h-4 w-4" aria-hidden="true" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" aria-label={`Remove ${item.file.name}`} onClick={() => remove(item.id)} data-testid={`queue-remove-${index}`}>
+                <X className="h-4 w-4" aria-hidden="true" />
+              </Button>
             </div>
           </li>
         ))}
