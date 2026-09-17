@@ -1,26 +1,55 @@
-import { CheckCircle2, Download, Loader2, RotateCcw, XCircle } from "lucide-react";
+import { CheckCircle2, Download, Loader2, RotateCcw, XCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { ToolResultAssurance } from "@/components/tool-result-assurance";
+import type { ProcessProgress, ToolStatus } from "@/lib/tool-workflow";
 
 type ProcessingStateProps = {
-  status: "idle" | "processing" | "done" | "error";
+  status: ToolStatus;
   message?: string;
+  progress?: ProcessProgress | null;
   onDownload?: () => void;
   onReset?: () => void;
+  onCancel?: () => void;
+  onRetry?: () => void;
   downloadLabel?: string;
 };
 
-export function ProcessingState({ status, message, onDownload, onReset, downloadLabel = "Download" }: ProcessingStateProps) {
+export function ProcessingState({
+  status,
+  message,
+  progress,
+  onDownload,
+  onReset,
+  onCancel,
+  onRetry,
+  downloadLabel = "Download",
+}: ProcessingStateProps) {
   if (status === "idle") return null;
 
   if (status === "processing") {
+    const hasFraction = typeof progress?.fraction === "number";
+    const percent = hasFraction ? Math.round((progress!.fraction as number) * 100) : undefined;
     return (
-      <div className="flex flex-col items-center gap-3 py-10 text-center" role="status" aria-live="polite">
+      <div className="flex flex-col items-center gap-4 py-10 text-center" role="status" aria-live="polite">
         <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
-        <div>
-          <p className="font-medium">Processing your file…</p>
-          <p className="text-sm text-muted-foreground">Please keep this tab open until processing is complete.</p>
+        <div className="w-full max-w-sm space-y-2">
+          <p className="font-medium">{progress?.stage || "Processing your file…"}</p>
+          {hasFraction ? (
+            <>
+              <Progress value={percent} aria-label={`Processing progress: ${percent}%`} className="h-2" />
+              <p className="text-xs text-muted-foreground">{percent}%</p>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">Please keep this tab open until processing is complete.</p>
+          )}
         </div>
+        {onCancel && (
+          <Button variant="outline" size="sm" onClick={onCancel} data-testid="cancel-btn">
+            <X className="mr-2 h-4 w-4" aria-hidden="true" />
+            Cancel
+          </Button>
+        )}
       </div>
     );
   }
@@ -33,7 +62,19 @@ export function ProcessingState({ status, message, onDownload, onReset, download
           <p className="font-medium">We couldn’t process that file</p>
           {message && <p className="mt-1 text-sm text-muted-foreground">{message}</p>}
         </div>
-        {onReset && <Button variant="outline" onClick={onReset}><RotateCcw className="mr-2 h-4 w-4" />Try another file</Button>}
+        <div className="flex flex-wrap justify-center gap-3">
+          {onRetry && (
+            <Button onClick={onRetry} data-testid="retry-btn">
+              <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" />
+              Try again
+            </Button>
+          )}
+          {onReset && (
+            <Button variant="outline" onClick={onReset} data-testid="reset-btn">
+              Use another file
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -44,8 +85,18 @@ export function ProcessingState({ status, message, onDownload, onReset, download
       <p className="mt-3 font-medium">Your file is ready</p>
       {message && <p className="mt-1 text-sm text-muted-foreground">{message}</p>}
       <div className="mt-5 flex flex-wrap justify-center gap-3">
-        {onDownload && <Button onClick={onDownload}><Download className="mr-2 h-4 w-4" />{downloadLabel}</Button>}
-        {onReset && <Button variant="outline" onClick={onReset}><RotateCcw className="mr-2 h-4 w-4" />Process another file</Button>}
+        {onDownload && (
+          <Button onClick={onDownload} data-testid="download-btn">
+            <Download className="mr-2 h-4 w-4" aria-hidden="true" />
+            {downloadLabel}
+          </Button>
+        )}
+        {onReset && (
+          <Button variant="outline" onClick={onReset} data-testid="process-another-btn">
+            <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" />
+            Process another file
+          </Button>
+        )}
       </div>
       <ToolResultAssurance />
     </div>

@@ -14,7 +14,7 @@ export default function PdfToImagesRelease2Tool() {
 
   return (
     <ToolPage
-      toolId="pdf-to-img"
+      toolId="pdf-to-images"
       instructions={{
         title: "How to convert PDF pages to images",
         steps: ["Upload one PDF.", "Choose PNG or JPG, resolution, and optional page range.", "Convert and download one image or a ZIP of images."],

@@ -1,6 +1,7 @@
 import { ToolPage } from "@/pages/tool-page";
 import { downloadBlob, imagesToPDF } from "@/lib/pdf-engine";
 import { BatchFileQueue } from "@/components/batch-file-queue";
+import { Button } from "@/components/ui/button";
 
 export default function ImgToPdfTool() {
   return (
@@ -21,14 +22,15 @@ export default function ImgToPdfTool() {
               title="Image page order"
               onChange={(next) => setFiles(next)}
             />
-            <button
-              type="button"
+            <Button
               onClick={onProcess}
+              className="w-full"
+              size="lg"
               disabled={status === "processing" || !files.length}
-              className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              data-testid="process-btn"
             >
               {status === "processing" ? "Creating PDF…" : "Convert images to PDF"}
-            </button>
+            </Button>
           </div>
         ) : null
       }

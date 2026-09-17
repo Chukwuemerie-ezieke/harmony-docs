@@ -1,23 +1,9 @@
-let worker: Worker | null = null;
+import { runInWorker } from "@/lib/pdf-engine";
 
-function getWorker(): Worker {
-  worker ??= new Worker(new URL("../workers/pdf-release1.worker.ts", import.meta.url), { type: "module" });
-  return worker;
-}
-
+// Selection/range-aware PDF operations. These share the single canonical PDF
+// worker via runInWorker (defined in pdf-engine.ts).
 function run<T>(action: string, payload: Record<string, unknown>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const id = crypto.randomUUID();
-    const currentWorker = getWorker();
-    const handler = (event: MessageEvent) => {
-      if (event.data.id !== id) return;
-      currentWorker.removeEventListener("message", handler);
-      if (event.data.status === "success") resolve(event.data.data as T);
-      else reject(new Error(event.data.error || "PDF processing failed."));
-    };
-    currentWorker.addEventListener("message", handler);
-    currentWorker.postMessage({ id, action, payload });
-  });
+  return runInWorker(action, payload) as Promise<T>;
 }
 
 async function bytes(file: File): Promise<Uint8Array> {
