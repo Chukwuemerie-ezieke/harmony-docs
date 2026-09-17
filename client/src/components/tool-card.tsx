@@ -2,14 +2,14 @@ import { Link } from "wouter";
 import { Star } from "lucide-react";
 import {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool, FileSearch,
 } from "lucide-react";
 import type { ToolDefinition } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool, FileSearch,
 };
 
 interface ToolCardProps {

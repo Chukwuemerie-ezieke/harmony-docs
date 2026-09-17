@@ -20,6 +20,7 @@ export default function ProtectTool() {
       }}
       onDownload={(data) => downloadBlob(data, "protected.pdf")}
       downloadLabel="Download protected PDF"
+      outputName="protected.pdf"
       instructions={{
         title: "How to password protect a PDF",
         steps: [

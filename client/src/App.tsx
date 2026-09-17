@@ -24,6 +24,7 @@ const ImgToPdfTool = lazy(() => import("@/pages/tools/img-to-pdf"));
 const PdfToImgTool = lazy(() => import("@/pages/tools/pdf-to-img"));
 const PdfToImagesTool = lazy(() => import("@/pages/tools/pdf-to-images-release2"));
 const HtmlToPdfTool = lazy(() => import("@/pages/tools/html-to-pdf-browser"));
+const OcrTool = lazy(() => import("@/pages/tools/ocr"));
 const WatermarkTool = lazy(() => import("@/pages/tools/watermark"));
 const AddTextTool = lazy(() => import("@/pages/tools/add-text"));
 const ProtectTool = lazy(() => import("@/pages/tools/protect"));
@@ -72,6 +73,7 @@ function AppRouter() {
         <Route path="/tool/pdf-to-img" component={PdfToImgTool} />
         <Route path="/tool/pdf-to-images" component={PdfToImagesTool} />
         <Route path="/tool/html-to-pdf" component={HtmlToPdfTool} />
+        <Route path="/tool/ocr" component={OcrTool} />
         <Route path="/tool/watermark" component={WatermarkTool} />
         <Route path="/tool/add-text" component={AddTextTool} />
         <Route path="/tool/protect" component={ProtectTool} />

@@ -23,6 +23,7 @@ export default function UnlockTool() {
       }}
       onDownload={(data) => downloadBlob(data, "unlocked.pdf")}
       downloadLabel="Download unlocked PDF"
+      outputName="unlocked.pdf"
       instructions={{
         title: "How to unlock a password-protected PDF",
         steps: [

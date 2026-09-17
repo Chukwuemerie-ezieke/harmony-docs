@@ -17,6 +17,7 @@ export default function CompressTool() {
       }}
       onDownload={(data) => downloadBlob(data, "compressed.pdf")}
       downloadLabel="Download compressed PDF"
+      outputName="compressed.pdf"
       instructions={{
         title: "How to compress a PDF",
         steps: [

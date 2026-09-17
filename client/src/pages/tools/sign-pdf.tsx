@@ -38,6 +38,7 @@ export default function SignPdfTool() {
       }}
       onDownload={(data) => downloadBlob(data, "signed_document.pdf")}
       downloadLabel="Download signed PDF"
+      outputName="signed_document.pdf"
       instructions={{
         title: "How to sign a PDF",
         steps: [

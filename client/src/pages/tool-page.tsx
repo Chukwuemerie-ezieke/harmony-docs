@@ -7,6 +7,7 @@ import { getToolById } from "@/lib/tools";
 import { resolveTool } from "@/lib/tool-registry";
 import { useRecordRecent } from "@/hooks/use-tool-preferences";
 import { consumeHandoff, fileFromResult } from "@/lib/tool-handoff";
+import { recordWork } from "@/lib/workspace";
 import { trackPublicEvent } from "@/lib/privacy-analytics";
 import { toUserError, CancelledError } from "@/lib/tool-errors";
 import type { ProcessContext, ProcessProgress, ProcessOutcome, ToolStatus } from "@/lib/tool-workflow";
@@ -14,7 +15,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool, FileSearch,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -26,7 +27,7 @@ import {
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool, FileSearch,
 };
 
 interface ToolChildrenProps {
@@ -59,8 +60,30 @@ interface ToolPageProps {
   onProcess?: (files: File[], context: ProcessContext) => Promise<ProcessOutcome>;
   onDownload?: (result: any) => void;
   downloadLabel?: string;
+  /**
+   * Output file name recorded in the local workspace history (metadata only).
+   * Defaults to `<toolId>-result`. Never the source file name.
+   */
+  outputName?: string;
+  /** Optional preview of the result, rendered in the completed (done) state. */
+  resultPreview?: (result: any) => React.ReactNode;
   instructions?: { title: string; steps: string[] };
   faqs?: { question: string; answer: string }[];
+}
+
+/** Best-effort byte size of a tool result for local history metadata. */
+function resultByteSize(result: unknown): number {
+  if (result instanceof Uint8Array) return result.byteLength;
+  if (result instanceof Blob) return result.size;
+  if (Array.isArray(result)) {
+    return result.reduce((sum: number, item: unknown) => {
+      const data = (item as { data?: unknown })?.data;
+      if (data instanceof Uint8Array) return sum + data.byteLength;
+      if (data instanceof Blob) return sum + data.size;
+      return sum;
+    }, 0);
+  }
+  return 0;
 }
 
 export function ToolPage({
@@ -70,6 +93,8 @@ export function ToolPage({
   onProcess,
   onDownload,
   downloadLabel,
+  outputName,
+  resultPreview,
   instructions,
   faqs,
 }: ToolPageProps) {
@@ -184,8 +209,16 @@ export function ToolPage({
     if (!onDownload) return;
     void trackPublicEvent("download_clicked", analyticsAttributes);
     onDownload(result);
+    // Record metadata-only history in the local workspace (device-only).
+    void recordWork({
+      toolId,
+      outputName: outputName ?? `${toolId}-result`,
+      outputBytes: resultByteSize(result),
+    }).catch(() => {
+      // Workspace history is best-effort and must never block a download.
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onDownload, result, toolId, tool?.category]);
+  }, [onDownload, result, toolId, tool?.category, outputName]);
 
   const handleReset = () => {
     hadFilesRef.current = false;
@@ -276,6 +309,8 @@ export function ToolPage({
               )}
             </>
           ) : null}
+
+          {status === "done" && resultPreview ? resultPreview(result) : null}
 
           <ProcessingState
             status={status}

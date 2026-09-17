@@ -4,6 +4,7 @@ import { tools, categories, getToolById } from "@/lib/tools";
 import { searchTools } from "@/lib/tool-search";
 import { useToolPreferences } from "@/hooks/use-tool-preferences";
 import { ToolCard } from "@/components/tool-card";
+import { RecentWork } from "@/components/recent-work";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -72,7 +73,8 @@ export function ToolsDirectory() {
         </div>
       </div>
 
-      {/* Favourites & recents (only on the un-filtered landing view) */}
+      {/* Recent work (local workspace), favourites & recents — landing view only */}
+      {showCurated && <RecentWork />}
       {showCurated && favoriteTools.length > 0 && (
         <ToolRow
           title="Favourites"
