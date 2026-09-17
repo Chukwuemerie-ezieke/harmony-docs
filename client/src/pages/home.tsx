@@ -74,7 +74,7 @@ export default function Home() {
                     return (
                       <Link
                         key={tool.id}
-                        href={tool.route}
+                        href={`#${tool.route}`}
                         data-testid={`tool-card-${tool.id}`}
                       >
                         <div className="group flex flex-col gap-4 rounded-xl border border-border/60 bg-card p-6 transition-all duration-200 hover:border-primary hover:shadow-xl hover:-translate-y-1 h-full relative overflow-hidden">

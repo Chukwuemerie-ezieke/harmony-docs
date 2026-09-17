@@ -30,9 +30,6 @@ self.onmessage = async (e: MessageEvent) => {
       case "images-to-pdf":
         result = await handleImagesToPdf(payload.files, payload.types);
         break;
-      case "protect":
-        result = await handleProtect(payload.file, payload.password);
-        break;
       case "rearrange":
         result = await handleRearrange(payload.file, payload.order);
         break;
@@ -193,13 +190,6 @@ async function handleImagesToPdf(filesData: Uint8Array[], types: string[]) {
       height: scaledHeight,
     });
   }
-  return await pdf.save();
-}
-
-async function handleProtect(bytes: Uint8Array, password: string) {
-  const pdf = await PDFDocument.load(bytes);
-  pdf.setTitle(pdf.getTitle() || "Protected Document");
-  pdf.setProducer("Harmony Docs - Harmony Digital Consults Ltd");
   return await pdf.save();
 }
 

@@ -6,6 +6,8 @@ export default function OrganizePdfTool() {
   return (
     <ToolPage
       toolId="organize"
+      onDownload={(data) => downloadBlob(data, "organized.pdf")}
+      downloadLabel="Download organised PDF"
       instructions={{
         title: "How to organise PDF pages",
         steps: [

@@ -92,14 +92,6 @@ export async function imagesToPDF(files: File[]): Promise<Uint8Array> {
   return runInWorker("images-to-pdf", { files: bytesArray, types });
 }
 
-export async function protectPDF(
-  file: File,
-  password: string
-): Promise<Uint8Array> {
-  const bytes = await fileToBytes(file);
-  return runInWorker("protect", { file: bytes, password });
-}
-
 export async function rearrangePDF(file: File, order: number[]): Promise<Uint8Array> {
   const bytes = await fileToBytes(file);
   return runInWorker("rearrange", { file: bytes, order });
