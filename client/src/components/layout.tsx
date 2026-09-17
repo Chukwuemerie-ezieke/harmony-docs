@@ -28,7 +28,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               Contact
             </Link>
             <ThemeToggle
-              theme={theme as any}
+              theme={theme}
               onToggle={() => setTheme(theme === "dark" ? "light" : "dark")}
             />
           </nav>

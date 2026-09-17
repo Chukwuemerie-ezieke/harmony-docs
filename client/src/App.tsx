@@ -12,6 +12,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import Privacy from "@/pages/privacy";
 
 const MergeTool = lazy(() => import("@/pages/tools/merge"));
 const SplitTool = lazy(() => import("@/pages/tools/split"));
@@ -57,6 +58,7 @@ function AppRouter() {
         <Route path="/tools" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
+        <Route path="/privacy" component={Privacy} />
         <Route path="/book-consultation" component={Contact} />
         <Route path="/book-a-consultation" component={Contact} />
         <Route path="/consultation" component={Contact} />
