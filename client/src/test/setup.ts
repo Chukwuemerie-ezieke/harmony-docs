@@ -2,6 +2,16 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach } from "vitest";
 
+// Node 20/jsdom can miss the Iterator global required by pdfjs-dist.
+if (typeof globalThis.Iterator === "undefined") {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).Iterator = class Iterator {
+    [Symbol.iterator]() {
+      return this;
+    }
+  };
+}
+
 // React Testing Library: unmount and clean the DOM between tests.
 afterEach(() => {
   cleanup();
