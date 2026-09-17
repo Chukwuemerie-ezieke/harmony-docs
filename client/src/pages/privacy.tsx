@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout";
 import { Link } from "wouter";
 import { MonitorSmartphone, FileLock2, UserCheck, ShieldOff } from "lucide-react";
+import { ClearWorkspaceButton } from "@/components/clear-workspace-button";
 
 const sections = [
   {
@@ -85,6 +86,19 @@ export default function PrivacyPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="py-12 border-t border-border/60">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground mb-3">Your data on this device</h2>
+          <p className="text-muted-foreground leading-relaxed mb-4">
+            To make tools easier to use, HarmonyDocs can remember a short history of your recent work
+            (file names and sizes only — never the documents themselves) and your saved tool settings.
+            This is stored only in your browser on this device and is never uploaded. You can remove it
+            at any time.
+          </p>
+          <ClearWorkspaceButton />
         </div>
       </section>
 

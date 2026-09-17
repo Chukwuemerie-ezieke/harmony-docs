@@ -13,6 +13,7 @@ export default function MergeTool() {
       }}
       onDownload={(data) => downloadBlob(data, "merged.pdf")}
       downloadLabel="Download merged PDF"
+      outputName="merged.pdf"
       renderOptions={({ files, setFiles, onProcess, status }) =>
         files.length > 0 ? (
           <div className="space-y-4">

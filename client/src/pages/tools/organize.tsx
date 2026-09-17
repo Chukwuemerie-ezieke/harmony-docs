@@ -8,6 +8,7 @@ export default function OrganizePdfTool() {
       toolId="organize"
       onDownload={(data) => downloadBlob(data, "organized.pdf")}
       downloadLabel="Download organised PDF"
+      outputName="organized.pdf"
       instructions={{
         title: "How to organise PDF pages",
         steps: [

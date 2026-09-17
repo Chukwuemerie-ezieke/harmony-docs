@@ -2,7 +2,7 @@ import { useLocation } from "wouter";
 import { ArrowRight } from "lucide-react";
 import {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool, FileSearch,
 } from "lucide-react";
 import { getToolById } from "@/lib/tools";
 import { stageHandoff } from "@/lib/tool-handoff";
@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Layers, Scissors, Minimize2, RotateCw, Hash,
-  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool,
+  ImagePlus, Image, Globe, Droplets, Type, Lock, Unlock, PenTool, FileSearch,
 };
 
 interface NextToolSuggestionsProps {
